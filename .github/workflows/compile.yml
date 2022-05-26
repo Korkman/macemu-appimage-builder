@@ -1,0 +1,40 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Compile
+
+# Controls when the workflow will run
+on:
+  schedule:
+    # run this every month on the second monday at 7:20'o clock UTC
+    - cron:  '20 7 8-14 * 1'
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      #- name: Fetch builder
+      #  run: git clone --depth=1 https://github.com/Korkman/macemu-appimage-builder.git .
+
+      - name: Compile
+        run: sudo ./compile
+      
+      # save artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-result
+          path: macemu-appimage-builder/output/
+  # trigger release workflow
+  release:
+    uses: ./.github/workflows/release.yml
+  

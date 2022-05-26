@@ -27,5 +27,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build-result
-          path: macemu-appimage-builder/output/
+          path: output/
 

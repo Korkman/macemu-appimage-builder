@@ -9,8 +9,59 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # trigger workflows
-  compile:
-    uses: ./.github/workflows/compile.yml
-  release:
-    uses: ./.github/workflows/release.yml
-
+  compile_and_release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Compile
+        run: sudo ./compile
+      
+      - name: List files for the log
+        run: ls -al output/
+      
+      # save artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-result
+          path: output/
+          
+      - name: recreate uploaded zip file
+        run: zip -r build-result.zip output
+      
+      # copy & paste release.yml from this point
+      
+      - name: List files for the log
+        run: ls -al
+      
+      - name: version
+        run: echo "::set-output name=version::$(date +%Y-%m-%d)"
+        id: version
+        
+      - name: Rename release
+        run: "mv build-result.zip build-${{ steps.version.outputs.version }}.zip"
+      
+      # create a release draft
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref }}
+          body_path: .github/AUTORELEASE.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          
+      - name: upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-${{ steps.version.outputs.version }}.zip
+          asset_name: build-${{ steps.version.outputs.version }}.zip
+          asset_content_type: application/gzip

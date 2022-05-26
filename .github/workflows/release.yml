@@ -29,7 +29,7 @@ jobs:
           name: build-result
           # Optional, choose to skip unpacking the downloaded artifact(s)
           # default false
-          skip_unpack: false
+          #skip_unpack: true
           
       - name: List files for the log
         run: ls -al

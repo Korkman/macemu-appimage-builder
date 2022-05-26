@@ -25,8 +25,9 @@ SheepShaverMmap  - helper to fix mmap allocation permissions
 ## About the launchers
 The launchers make sure the working directories match expectations. For SheepShaver
 the sysctl variable vm.mmap_min_addr is ensured to be set to 0. They are mostly optional.
-The main point is to generate the AppImages in ```output/macemuAppImages```. You can run
-them directly if you want to.
+The main point is to generate the AppImages in the directory ```macemuAppImages```. You
+can skip the launchers if you want to, just make sure the GUIs are run in the same directory
+as the emulators.
 
 ## Install
 The install script will copy launchers and AppImages to ```$HOME/.local/bin/``` and create

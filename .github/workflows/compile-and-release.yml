@@ -31,7 +31,8 @@ jobs:
       - name: recreate uploaded zip file
         run: |
           cd output
-          zip -r build-result.zip .
+          sudo zip -r build-result.zip .
+          chmod a+r build-result.zip
       
       # copy & paste release.yml from this point
       

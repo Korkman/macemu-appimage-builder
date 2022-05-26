@@ -16,16 +16,18 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      #- name: Fetch builder
-      #  run: git clone --depth=1 https://github.com/Korkman/macemu-appimage-builder.git .
-
+      
       - name: Compile
         run: sudo ./compile
+      
+      - name: List files for the log
+        run: ls -al output/
+      
+      - name: Create tar.gz
+        run: tar -czvf build-result.tar.gz -C output .
       
       # save artifacts
       - uses: actions/upload-artifact@v3
         with:
           name: build-result
-          path: output/
-
+          path: build-result.tar.gz

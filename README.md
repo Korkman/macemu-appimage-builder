@@ -1,6 +1,6 @@
 # macemu-appimage-builder
 Builds the popular classic Macintosh emulators BasiliskII and SheepShaver
-from source faciliating Docker and creates AppImages of them to run easily on
+from source for 64-bit x86 Linux and creates AppImages which run instantly on
 many Linux desktops.
 
 Download the [latest build](https://github.com/Korkman/macemu-appimage-builder/releases/latest)
@@ -36,7 +36,7 @@ menu entries for the Application menu for convenience.
 Their names are missing the .appImage suffix. This is so the GUIs can launch their emulator
 counterparts. It breaks convention, but doesn't change how they work.
 
-## AppImage compatibilitiy
+## AppImage compatibility
 AppImages are portable Linux applications containing all the libraries required to run. Their
 only dependency is having FUSE available (which basically every sane Linux desktop environment has).
 More specifically, at the time of writing, this is FUSE2 opposed to FUSE3. FUSE3 support is [on its way](https://github.com/AppImage/AppImageKit/issues/877),
@@ -47,6 +47,8 @@ though. Some users (e.g. Ubuntu 22.04) may need to manually install libfuse2 to 
 ## Prerequisites
 * 64-bit x86 Linux system
 * Docker
+
+If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/build-stage1/Dockerfile) might still be of help.
 
 ## Compile
 ```

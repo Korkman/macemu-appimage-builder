@@ -48,25 +48,16 @@ jobs:
       - name: Rename release
         run: "mv build-result.tar.gz build-${{ steps.version.outputs.version }}.tar.gz"
       
-      # create a release draft
-      - name: release
-        uses: actions/create-release@v1
-        id: create_release
+      # create a release
+      - uses: "ncipollo/release-action@v1"
         with:
-          draft: false
+          tag: "${{ steps.version.outputs.version }}"
+          #token: "${{ secrets.GITHUB_TOKEN }}"
+          name: "${{ steps.version.outputs.version }}"
           prerelease: false
-          release_name: ${{ steps.version.outputs.version }}
-          tag_name: ${{ github.ref }}
-          body_path: .github/AUTORELEASE.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          
-      - name: upload to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ steps.version.outputs.version }}.tar.gz
-          asset_name: build-${{ steps.version.outputs.version }}.tar.gz
-          asset_content_type: application/gzip
+          draft: false
+          #generateReleaseNotes: false
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true
+          artifacts: "build-${{ steps.version.outputs.version }}.tar.gz"
+          artifactContentType: application/gzip

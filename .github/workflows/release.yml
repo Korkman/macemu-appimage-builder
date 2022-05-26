@@ -55,4 +55,5 @@ jobs:
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
           artifacts: "build-${{ steps.version.outputs.version }}.tar.gz"
+          artifactContentType: application/gzip
   

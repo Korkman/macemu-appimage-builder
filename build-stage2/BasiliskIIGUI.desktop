@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=BasiliskIIGUI
+Comment="A GUI for the open source Macintosh II Emulator"
+Icon=BasiliskIIGUI
+Exec=BasiliskIIGUI
+Terminal=false
+StartupNotify=false
+Categories=Emulator;System;

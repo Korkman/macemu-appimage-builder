@@ -1,0 +1,84 @@
+#! /bin/bash
+{
+	set -eu
+
+	# delete old output
+	rm -rf /output/*
+	mkdir /output/macemuAppImages
+	mkdir /output/installFiles
+
+	# pack BasiliskII & BasiliskIIGUI
+	cd /usr/local/src/macemu/BasiliskII/src/Unix
+
+	cp -r AppDir AppDirGUI
+	cp /build/BasiliskII.desktop ./AppDir/
+	cp /build/BasiliskIIGUI.desktop ./AppDirGUI/
+
+	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskII.ico ./BasiliskII.png
+	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskIIGUI.ico ./BasiliskIIGUI.png
+
+	cp ./BasiliskII.png /output/installFiles/
+	cp ./BasiliskIIGUI.png /output/installFiles/
+	cp /build/BasiliskII.desktop /output/installFiles/
+	cp /build/BasiliskIIGUI.desktop /output/installFiles/
+
+	linuxdeploy \
+		--appdir AppDir \
+		--executable ./BasiliskII \
+		--desktop-file=/build/BasiliskII.desktop \
+		--icon-file=BasiliskII.png \
+		--output appimage
+
+	linuxdeploy \
+		--appdir AppDirGUI \
+		--executable ./BasiliskIIGUI \
+		--desktop-file=/build/BasiliskIIGUI.desktop \
+		--icon-file=BasiliskIIGUI.png \
+		--output appimage
+	# add to output
+	cp ./*.AppImage /output/macemuAppImages/
+
+	# pack SheepShaver & SheepShaverGUI
+	cd /usr/local/src/macemu/SheepShaver/src/Unix
+
+	cp -r AppDir AppDirGUI
+	cp /build/SheepShaver.desktop ./AppDir/
+	cp /build/SheepShaverGUI.desktop ./AppDirGUI/
+
+	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaver.ico ./SheepShaver.png
+	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaverGUI.ico ./SheepShaverGUI.png
+	
+	cp ./SheepShaver.png /output/installFiles/
+	cp ./SheepShaverGUI.png /output/installFiles/
+	cp /build/SheepShaver.desktop /output/installFiles/
+	cp /build/SheepShaverGUI.desktop /output/installFiles/
+	
+	linuxdeploy \
+		--appdir AppDir \
+		--executable ./SheepShaver \
+		--desktop-file=/build/SheepShaver.desktop \
+		--icon-file=SheepShaver.png \
+		--output appimage
+
+	linuxdeploy \
+		--appdir AppDirGUI \
+		--executable ./SheepShaverGUI \
+		--desktop-file=/build/SheepShaverGUI.desktop \
+		--icon-file=SheepShaverGUI.png \
+		--output appimage
+	# add to output
+	cp ./*.AppImage /output/macemuAppImages/
+
+	# reorganize output so the GUIs can start their emulators
+	cd /output/macemuAppImages
+	mv BasiliskII-*.AppImage BasiliskII
+	mv BasiliskIIGUI-*.AppImage BasiliskIIGUI
+	mv SheepShaver-*.AppImage SheepShaver
+	mv SheepShaverGUI-*.AppImage SheepShaverGUI
+	
+	# add helpers
+	cp /build/helpers/* /output/
+	
+
+	exit
+}

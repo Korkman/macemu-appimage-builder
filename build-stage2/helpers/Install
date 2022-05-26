@@ -1,0 +1,43 @@
+#! /bin/sh
+{
+	# Install script
+	# 
+	# Installs output files to somewhat sane locations and adds icons to the
+	# applications menu.
+	set -eu
+
+	if command -v systemd-path > /dev/null
+	then
+		binDir="$(systemd-path user-binaries)"
+		iconsDir="$(systemd-path user-shared)/icons"
+		appsDir="$(systemd-path user-shared)/applications"
+	else
+		echo "WARNING: systemd-path not found, falling back to hardcoded defaults"
+		binDir=~/.local/bin
+		iconsDir=~/.local/share/icons
+		appsDir=~/.local/share/applications
+	fi
+
+	mkdir -p "$binDir"
+	mkdir -p "$iconsDir"
+	mkdir -p "$appsDir"
+
+	echo "Installing binaries to $binDir"
+
+	# install AppImages and helper scripts in ~/.local/bin
+	cp -a ./macemuAppImages "$binDir/"
+	cp -a ./SheepShaver* "$binDir/"
+	cp -a ./BasiliskII* "$binDir/"
+
+	echo "Installing icons to $iconsDir"
+	cp -a ./installFiles/*.png "$iconsDir/"
+	
+	echo "Installing desktop files to $appsDir"
+
+	cp ./installFiles/BasiliskII.desktop "$appsDir/"
+	cp ./installFiles/BasiliskIIGUI.desktop "$appsDir/"
+	cp ./installFiles/SheepShaver.desktop "$appsDir/"
+	cp ./installFiles/SheepShaverGUI.desktop "$appsDir/"
+
+	exit
+}

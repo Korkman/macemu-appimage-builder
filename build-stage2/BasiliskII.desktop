@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=BasiliskII
+Comment="An open source Macintosh II Emulator"
+Icon=BasiliskII
+Exec=BasiliskII
+Terminal=false
+StartupNotify=false
+Categories=Emulator;System;

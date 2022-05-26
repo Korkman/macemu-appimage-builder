@@ -1,0 +1,11 @@
+#! /bin/sh
+{
+	# Launch emulator in proper location
+	set -eu
+	
+	cd "$(dirname "$0")/macemuAppImages"
+	../SheepShaverMmap
+	./SheepShaver "$@"
+	
+	exit
+}

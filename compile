@@ -1,0 +1,39 @@
+#! /bin/bash
+
+{
+	set -eu
+
+	# stage 1: download and compile
+	docker build --tag macemu-build-stage1 build-stage1
+	echo -e "\n\nBUILD STAGE 1 COMPLETE\n\n"
+	sleep 1
+	# stage 2: pack appimage
+	# cleanup
+	docker kill macemu-build-stage2 > /dev/null || true
+	docker rm macemu-build-stage2 > /dev/null || true
+	# prepare and run container (a running container is easier to debug)
+	modprobe fuse
+	docker run \
+		--name macemu-build-stage2 \
+		--detach \
+		--device /dev/fuse \
+		--cap-add SYS_ADMIN \
+		--security-opt apparmor:unconfined \
+		-v "$(realpath ./build-stage2):/build:ro" \
+		-v "$(realpath ./output):/output" \
+		macemu-build-stage1
+	# run linuxdeploy inside container
+	docker exec macemu-build-stage2 /build/run
+
+	echo -e "\n\nBUILD STAGE 2 COMPLETE\n\n"
+	sleep 1
+	
+	# cleanup
+	docker kill macemu-build-stage2 > /dev/null || true
+	docker rm macemu-build-stage2 > /dev/null || true
+
+	echo -e "\n\nBUILD COMPLETE\nOutput files in directory \"output\"\n\n"
+	sleep 1
+
+	exit
+}

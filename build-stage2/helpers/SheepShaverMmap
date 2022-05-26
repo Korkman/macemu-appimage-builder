@@ -1,0 +1,35 @@
+#! /bin/sh
+{
+	# fix SheepShaver startup: test for and change vm.mmap_min_addr if not set to 0,
+	# give instructions for permanent solution
+	set -eu
+	if [ "${1:-nada}" = "fix_mmap" ]
+	then
+		echo \
+"The sysctl value vm.mmap_min_addr must be 0 for SheepShaver to work.
+Attempting to use sudo to change it for the current session.
+For a permanent fix, create a .conf file in /etc/sysctl.d/
+containing vm.mmap_min_addr=0"
+		if ! sudo /usr/sbin/sysctl vm.mmap_min_addr=0
+		then
+			echo "Failed to set the required sysctl variable via sudo. SheepShaver won't start."
+			echo "Press enter to continue ..."; read -r enter
+			
+			exit 1
+		fi
+	
+	else
+		
+		if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
+		then
+			# must have a blocking terminal for the dialog, do not use x-terminal-emulator
+			xterm -e "$0" "fix_mmap"
+			if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
+			then
+				# sudo failed
+				exit 1
+			fi
+		fi
+	fi
+	exit
+}

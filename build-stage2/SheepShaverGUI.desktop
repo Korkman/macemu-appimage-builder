@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=SheepShaverGUI
+Comment="A GUI for the open source Power Macintosh Emulator"
+Icon=SheepShaverGUI
+Exec=SheepShaverGUI
+Terminal=false
+StartupNotify=false
+Categories=Emulator;System;

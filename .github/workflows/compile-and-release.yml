@@ -1,0 +1,16 @@
+name: Compile and release
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  schedule:
+    # run this every month on the second monday at 7:20'o clock UTC
+    - cron:  '20 7 8-14 * 1'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # trigger workflows
+  compile:
+    uses: ./.github/workflows/compile.yml
+  release:
+    uses: ./.github/workflows/release.yml
+

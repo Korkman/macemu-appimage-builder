@@ -29,7 +29,9 @@ jobs:
           path: output/
           
       - name: recreate uploaded zip file
-        run: zip -r build-result.zip output
+        run: |
+          cd output
+          zip -r build-result.zip .
       
       # copy & paste release.yml from this point
       

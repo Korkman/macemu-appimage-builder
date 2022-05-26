@@ -23,8 +23,11 @@ jobs:
       - name: List files for the log
         run: ls -al output/
       
+      - name: Make nice directory name
+        run: mv output macemu-appimages
+      
       - name: Create tar.gz
-        run: tar -czvf build-result.tar.gz -C output .
+        run: tar -czvf build-result.tar.gz -C macemu-appimages .
       
       # save artifacts
       - uses: actions/upload-artifact@v3

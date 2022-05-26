@@ -27,13 +27,11 @@ jobs:
         with:
           name: build-result
           path: output/
-          
-      - name: recreate uploaded zip file
-        run: |
-          cd output
-          sudo zip -r build-result.zip .
-          chmod a+r build-result.zip
       
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-result
+    
       # copy & paste release.yml from this point
       
       - name: List files for the log

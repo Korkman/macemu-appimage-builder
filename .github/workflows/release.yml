@@ -44,15 +44,15 @@ jobs:
         run: "mv build-result.tar.gz build-${{ steps.version.outputs.version }}.tar.gz"
       
       # create a release
-      - uses: "softprops/action-gh-release@v1"
+      - uses: "ncipollo/release-action@v1"
         with:
-          tag_name: "${{ steps.version.outputs.version }}"
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          #tag: "${{ steps.version.outputs.version }}"
+          #token: "${{ secrets.GITHUB_TOKEN }}"
           name: "${{ steps.version.outputs.version }}"
           prerelease: false
           draft: false
-          generate_release_notes: false
-          body_path: .github/AUTORELEASE.md
-          files: |
-            build-${{ steps.version.outputs.version }}.tar.gz
+          #generateReleaseNotes: false
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true
+          artifacts: "build-${{ steps.version.outputs.version }}.tar.gz"
   

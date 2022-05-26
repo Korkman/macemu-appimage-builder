@@ -1,6 +1,6 @@
 # macemu-appimage-builder
 Builds the popular classic Macintosh emulators BasiliskII and SheepShaver
-from source faciliating Docker and create AppImages of them to run easily on
+from source faciliating Docker and creates AppImages of them to run easily on
 many Linux desktops.
 
 ## Prerequisites

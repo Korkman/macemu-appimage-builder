@@ -46,7 +46,7 @@ jobs:
       # create a release
       - uses: "ncipollo/release-action@v1"
         with:
-          tag: "${{ github.ref }}"
+          #tag: "${{ github.ref }}"
           #token: "${{ secrets.GITHUB_TOKEN }}"
           name: "${{ steps.version.outputs.version }}"
           prerelease: false

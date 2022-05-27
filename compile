@@ -2,7 +2,7 @@
 
 {
 	set -eu
-
+	
 	# stage 1: download and compile
 	docker build --tag macemu-build-stage1 build-stage1
 	echo -e "\n\nBUILD STAGE 1 COMPLETE\n\n"
@@ -13,6 +13,8 @@
 	docker rm macemu-build-stage2 > /dev/null || true
 	# prepare and run container (a running container is easier to debug)
 	modprobe fuse
+	# for debugging:
+	# sudo docker run --rm -it macemu-build-stage1 /bin/bash
 	docker run \
 		--name macemu-build-stage2 \
 		--detach \
@@ -33,6 +35,12 @@
 	docker kill macemu-build-stage2 > /dev/null || true
 	docker rm macemu-build-stage2 > /dev/null || true
 
+	# convenience: chown the output directory to the sudo caller
+	if [ "${SUDO_USER:-}" != "" ]
+	then
+		chown "$SUDO_USER" -R output
+	fi
+	
 	echo -e "\n\nBUILD COMPLETE\nOutput files in directory \"output\"\n\n"
 	sleep 1
 

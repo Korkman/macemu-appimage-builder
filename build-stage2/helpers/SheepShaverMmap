@@ -1,47 +1,104 @@
 #! /bin/sh
 {
 	# fix SheepShaver startup: test for and change vm.mmap_min_addr if not set to 0,
-	# give instructions for permanent solution
+	# give instructions for permanent solution. advise not to use it.
+	
 	set -eu
 	
-	# function to show a GUI dialog if possible
-	# must have a blocking terminal for the dialog, do not use x-terminal-emulator
+	me="$0"
+	pauseAfterExecution="no"
+	
+	# function to display a terminal in the likely event we were started via a GUI menu
 	runVisible() {
-		if command -v xterm > /dev/null
-		then
-			xterm -e $@
+		# try a few terminals
+		if command -v x-terminal-emulator > /dev/null; then exec x-terminal-emulator -e "$me" "$@";
+		elif command -v konsole > /dev/null; then exec konsole -e "$me" "$@";
+		elif command -v xfce4-terminal > /dev/null; then exec xfce4-terminal -x "$me" "$@";
+		elif command -v gnome-terminal > /dev/null; then exec gnome-terminal -- "$me" "$@";
+		elif command -v xterm > /dev/null; then exec xterm -e "$me" "$@";
 		else
-			$@
+			# as last resort, we just hope the user is already running in a terminal
+			exec "$me" "$@"
 		fi
 	}
 	
-	if [ "${1:-nada}" = "fix_mmap" ]
+	if [ "${1:-nada}" = "fix_mmap_selinux" ]
 	then
+		# SELinux handling
+		shift
+		echo \
+"The SELinux policy mmap_low_allowed must be changed for SheepShaver
+to run. Attempting to use sudo to change it temporarily.
+
+For a permanent change (not recommended), run
+'sudo setsebool -P mmap_low_allowed 1'
+
+For information about the security impact, see
+https://wiki.debian.org/mmap_min_addr
+"
+		if ! sudo setsebool mmap_low_allowed 1
+		then
+			pauseAfterExecution="yes"
+			echo \
+"Failed. SheepShaver will probably crash."
+			echo "Press enter to continue ..."; read -r enter
+		else
+			echo \
+"Success. The setting will revert after a host reboot."
+			echo "Press enter to continue ..."; read -r enter
+		fi
+		
+	elif [ "${1:-nada}" = "fix_mmap" ]
+	then
+		# sysctl handling
+		shift
 		echo \
 "The sysctl value vm.mmap_min_addr must be 0 for SheepShaver to work.
-Attempting to use sudo to change it for the current session.
-For a permanent fix, create a .conf file in /etc/sysctl.d/
-containing vm.mmap_min_addr=0"
-		if ! sudo sysctl vm.mmap_min_addr=0
+Attempting to use sudo to change it temporarily.
+
+For a permanent change (not recommended), run
+'echo 'vm.mmap_min_addr=0' | sudo tee /etc/sysctl.d/10-mmap_min_addr-zero.conf'
+
+For information about the security impact, see
+https://wiki.debian.org/mmap_min_addr
+"
+		if ! sudo sysctl vm.mmap_min_addr=0 > /dev/null
 		then
-			echo "Failed to set the required sysctl variable via sudo. SheepShaver won't start."
+			pauseAfterExecution="yes"
+			echo "Failed. SheepShaver will probably crash."
 			echo "Press enter to continue ..."; read -r enter
-			
+		else
+			echo \
+"Success. The setting will revert after a host reboot."
+			echo "Press enter to continue ..."; read -r enter
+		fi
+		
+	else
+		# default case: detect low memory mmap status
+		# SELinux
+		if command -v selinuxenabled > /dev/null && selinuxenabled && sestatus -b | grep -E "mmap_low_allowed\\s+off" > /dev/null
+		then
+			# re-run self visible to show dialog
+			runVisible "fix_mmap_selinux" "$@"
 			exit 1
 		fi
-	
-	else
-		
+		# sysctl
 		if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
 		then
 			# re-run self visible to show dialog
-			runVisible "$0" "fix_mmap"
-			if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
-			then
-				# sudo failed
-				exit 1
-			fi
+			runVisible "fix_mmap" "$@"
+			exit 1
 		fi
 	fi
+	
+	# run image
+	cd "$(dirname "$0")/macemuAppImages"
+	./SheepShaver.AppImage "$@"
+	
+	if [ "$pauseAfterExecution" = "yes" ]
+	then
+		echo "Press enter to continue ..."; read -r enter
+	fi
+	
 	exit
 }

@@ -51,6 +51,12 @@ only dependency is having FUSE available (which basically every sane Linux deskt
 More specifically, at the time of writing, this is FUSE2 opposed to FUSE3. FUSE3 support is [on its way](https://github.com/AppImage/AppImageKit/issues/877),
 though. Some users (e.g. Ubuntu 22.04) may need to manually install libfuse2 to run AppImages for now.
 
+## If SheepShaver doesn't start
+Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows mmaps to start at address 0, which SheepShaver unfortunately requires. `sudo sysctl vm.mmap_min_addr=0` fixes this and will be attempted by the launcher scripts. To apply this fix permanently:
+```
+echo "vm.mmap_min_addr=0" | sudo tee /etc/sysctl.d/10-mmap_min_addr-zero.conf
+```
+
 # Building your own
 
 ## Prerequisites

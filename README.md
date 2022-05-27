@@ -25,13 +25,21 @@ SheepShaverMmap  - helper to fix mmap allocation permissions
 ## About the launchers
 The launchers make sure the working directories match expectations. For SheepShaver
 the sysctl variable vm.mmap_min_addr is ensured to be set to 0. They are mostly optional.
-The main point is to generate the AppImages in the directory ```macemuAppImages```. You
+The main point is to generate the AppImages in the directory `macemuAppImages`. You
 can skip the launchers if you want to, just make sure the GUIs are run in the same directory
 as the emulators.
 
 ## Install
-The install script will copy launchers and AppImages to ```$HOME/.local/bin/``` and create
+The install script will copy launchers and AppImages to `$HOME/.local/bin/`[^1] and create
 menu entries for the Application menu for convenience.
+
+## Where to put startup.wav
+Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it right into `macemuAppImages`. When installed it is located in `$HOME/.local/bin/macemuAppImages`[^1].
+
+## Where will preferences be saved
+In your home directory. Unless…
+
+… you create directories named `SheepShaver.home` and `BasiliskII.home` within `macemuAppImages` and create symlinks `SheepShaverGUI.home` and `BasiliskIIGUI.home` pointing to the former. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ## AppImage naming
 Their names are missing the .appImage suffix. This is so the GUIs can launch their emulator
@@ -84,3 +92,4 @@ Stage 2 runs linuxdeploy inside a Docker container (with elevated privileges so 
 the AppImages. This is because FUSE cannot be used in the Docker build process, unfortunately.
 
 
+[^1]: The path `$HOME/.local/bin` can in fact vary. See output of `systemd-path user-binaries`.

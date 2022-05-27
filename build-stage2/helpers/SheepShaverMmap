@@ -40,11 +40,11 @@ https://wiki.debian.org/mmap_min_addr
 		if ! sudo setsebool mmap_low_allowed 1
 		then
 			pauseAfterExecution="yes"
+			skipMmapChecks="yes"
 			echo \
 "Failed. SheepShaver will probably crash."
 			echo "Press enter to continue ..."; read -r enter
 		else
-			skipMmapChecks="yes"
 			echo \
 "Success. The setting will revert after a host reboot."
 			echo "Press enter to continue ..."; read -r enter
@@ -67,10 +67,10 @@ https://wiki.debian.org/mmap_min_addr
 		if ! sudo sysctl vm.mmap_min_addr=0 > /dev/null
 		then
 			pauseAfterExecution="yes"
+			skipMmapChecks="yes"
 			echo "Failed. SheepShaver will probably crash."
 			echo "Press enter to continue ..."; read -r enter
 		else
-			skipMmapChecks="yes"
 			echo \
 "Success. The setting will revert after a host reboot."
 			echo "Press enter to continue ..."; read -r enter

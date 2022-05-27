@@ -31,7 +31,7 @@ as the emulators.
 
 ## Install
 The install script will copy launchers and AppImages to `$HOME/.local/bin/`[^1] and create
-menu entries for the Application menu for convenience.
+menu entries for the application menu for convenience.
 
 ## Where to put startup.wav
 Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it right into `macemuAppImages`. When installed it is located in `$HOME/.local/bin/macemuAppImages`[^1].

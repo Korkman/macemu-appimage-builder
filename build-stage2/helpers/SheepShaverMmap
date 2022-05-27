@@ -22,7 +22,7 @@
 Attempting to use sudo to change it for the current session.
 For a permanent fix, create a .conf file in /etc/sysctl.d/
 containing vm.mmap_min_addr=0"
-		if ! sudo /usr/sbin/sysctl vm.mmap_min_addr=0
+		if ! sudo sysctl vm.mmap_min_addr=0
 		then
 			echo "Failed to set the required sysctl variable via sudo. SheepShaver won't start."
 			echo "Press enter to continue ..."; read -r enter

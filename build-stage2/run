@@ -10,9 +10,7 @@
 	# pack BasiliskII & BasiliskIIGUI
 	cd /usr/local/src/macemu/BasiliskII/src/Unix
 
-	cp -r AppDir AppDirGUI
 	cp /build/BasiliskII.desktop ./AppDir/
-	cp /build/BasiliskIIGUI.desktop ./AppDirGUI/
 
 	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskII.ico ./BasiliskII.png
 	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskIIGUI.ico ./BasiliskIIGUI.png
@@ -31,23 +29,13 @@
 		--icon-file=BasiliskII.png \
 		--output appimage
 
-	linuxdeploy \
-		--appdir AppDirGUI \
-		--executable ./BasiliskIIGUI \
-		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
-		--desktop-file=/build/BasiliskIIGUI.desktop \
-		--icon-file=BasiliskIIGUI.png \
-		--output appimage
 	# add to output
 	cp ./*.AppImage /output/macemuAppImages/
 
 	# pack SheepShaver & SheepShaverGUI
 	cd /usr/local/src/macemu/SheepShaver/src/Unix
 
-	cp -r AppDir AppDirGUI
 	cp /build/SheepShaver.desktop ./AppDir/
-	cp /build/SheepShaverGUI.desktop ./AppDirGUI/
 
 	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaver.ico ./SheepShaver.png
 	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaverGUI.ico ./SheepShaverGUI.png
@@ -66,24 +54,14 @@
 		--icon-file=SheepShaver.png \
 		--output appimage
 
-	linuxdeploy \
-		--appdir AppDirGUI \
-		--executable ./SheepShaverGUI \
-		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
-		--desktop-file=/build/SheepShaverGUI.desktop \
-		--icon-file=SheepShaverGUI.png \
-		--output appimage
 	# add to output
 	cp ./*.AppImage /output/macemuAppImages/
 
-	# reorganize output so the GUIs can start their emulators
+	# rename output files to be more readable
 	cd /output/macemuAppImages
-	mv BasiliskII-*.AppImage BasiliskII
-	mv BasiliskIIGUI-*.AppImage BasiliskIIGUI
-	mv SheepShaver-*.AppImage SheepShaver
-	mv SheepShaverGUI-*.AppImage SheepShaverGUI
-	
+	mv BasiliskII-*.AppImage BasiliskII.AppImage
+	mv SheepShaver-*.AppImage SheepShaver.AppImage
+
 	# add helpers
 	cp /build/helpers/* /output/
 	

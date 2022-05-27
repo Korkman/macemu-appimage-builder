@@ -1,10 +1,10 @@
 #! /bin/sh
 {
-	# Launch GUI at proper location so it finds emulator executable on "start"
+	# Launch with GUI
 	set -eu
 	
 	cd "$(dirname "$0")/macemuAppImages"
-	./BasiliskIIGUI "$@"
+	./BasiliskII.AppImage --nogui false "$@"
 	
 	exit
 }

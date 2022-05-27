@@ -1,11 +1,11 @@
 #! /bin/sh
 {
-	# Launch emulator in proper location
+	# Launch without GUI
 	set -eu
 	
 	cd "$(dirname "$0")/macemuAppImages"
 	../SheepShaverMmap
-	./SheepShaver "$@"
+	./SheepShaver.AppImage --nogui true "$@"
 	
 	exit
 }

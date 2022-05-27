@@ -39,5 +39,23 @@
 	cp ./installFiles/SheepShaver.desktop "$appsDir/"
 	cp ./installFiles/SheepShaverGUI.desktop "$appsDir/"
 
+	echo "Cleaning up obsolete stuff from previous installs ..."
+	rm -f "$binDir/macemuAppImages/SheepShaver"
+	rm -f "$binDir/macemuAppImages/SheepShaverGUI"
+	rm -f "$binDir/macemuAppImages/BasiliskII"
+	rm -f "$binDir/macemuAppImages/BasiliskIIGUI"
+
+	# Renaming previous .home directories ...
+	if [ -e "$binDir/macemuAppImages/SheepShaver.home" -a ! -e "$binDir/macemuAppImages/SheepShaver.AppImage.home" ]
+	then
+		mv "$binDir/macemuAppImages/SheepShaver.home" "$binDir/macemuAppImages/SheepShaver.AppImage.home"
+	fi
+	if [ -e "$binDir/macemuAppImages/BasiliskII.home" -a ! -e "$binDir/macemuAppImages/BasiliskII.AppImage.home" ]
+	then
+		mv "$binDir/macemuAppImages/BasiliskII.home" "$binDir/macemuAppImages/BasiliskII.AppImage.home"
+	fi
+
+	echo "Done."
+
 	exit
 }

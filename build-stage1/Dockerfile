@@ -60,7 +60,6 @@ RUN \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
 	--with-bincue \
-	--enable-standalone-gui \
 	--without-esd \
 	--with-vdeplug \
 	--with-libvhd \
@@ -74,7 +73,6 @@ RUN \
 
 RUN make -j $(nproc)
 RUN strip BasiliskII
-RUN strip BasiliskIIGUI
 RUN make install DESTDIR=AppDir
 
 # compile SheepShaver
@@ -97,25 +95,6 @@ RUN  \
 RUN make -j $(nproc)
 RUN strip SheepShaver
 RUN make install DESTDIR=AppDir
-RUN mv SheepShaver SheepShaver.good
-
-# compile SheepShaverGUI
-# same options except bincue
-RUN make clean
-RUN  \
-	./configure \
-	--enable-sdl-video=yes \
-	--enable-sdl-audio=yes \
-	--enable-standalone-gui \
-	--with-libvhd \
-	--with-x \
-	--without-esd \
-	;
-RUN make -j $(nproc)
-RUN strip SheepShaverGUI
-RUN make install DESTDIR=AppDir
-RUN rm SheepShaver
-RUN mv SheepShaver.good SheepShaver
 
 WORKDIR /usr/local/src/macemu
 CMD [ "/bin/bash", "-c", "while true; do sleep 1; done" ]

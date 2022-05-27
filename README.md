@@ -23,13 +23,12 @@ SheepShaverMmap  - helper to fix mmap allocation permissions
 ```
 
 ## About the launchers
-The launchers make sure the working directories match expectations. For SheepShaver
-the sysctl variable vm.mmap_min_addr is ensured to be set to 0. They are mostly optional.
+They are mostly optional. They make GUI and non-GUI startup easily accessible and ensure proper
+working directories. For SheepShaver the sysctl variable vm.mmap_min_addr is set to 0 if required. 
 The main point is to generate the AppImages in the directory `macemuAppImages`. You
-can skip the launchers if you want to, just make sure the GUIs are run in the same directory
-as the emulators.
+can skip the launchers if you want to.
 
-## Install
+## Install (optional)
 The install script will copy launchers and AppImages to `$HOME/.local/bin/`[^1] and create
 menu entries for the application menu for convenience.
 
@@ -39,23 +38,18 @@ Download your favorite startup chime in WAVE format and name it startup.wav to h
 ## Where will preferences be saved
 In your home directory. Unless…
 
-… you create directories named `SheepShaver.home` and `BasiliskII.home` within `macemuAppImages` and create symlinks `SheepShaverGUI.home` and `BasiliskIIGUI.home` pointing to the former. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
-
-## AppImage naming
-Their names are missing the .appImage suffix. This is so the GUIs can launch their emulator
-counterparts. It breaks convention, but doesn't change how they work.
+…you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within `macemuAppImages`. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ## AppImage compatibility
-AppImages are portable Linux applications containing all the libraries required to run. Their
-only dependency is having FUSE available (which basically every sane Linux desktop environment has).
-More specifically, at the time of writing, this is FUSE2 opposed to FUSE3. FUSE3 support is [on its way](https://github.com/AppImage/AppImageKit/issues/877),
-though. Some users (e.g. Ubuntu 22.04) may need to manually install libfuse2 to run AppImages for now.
+AppImages are portable Linux applications containing all the libraries required to run[^2]. Their
+only dependency is having FUSE available (which basically every sane Linux desktop environment has).[^3]
 
 ## If SheepShaver doesn't start
 Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows mmaps to start at address 0, which SheepShaver unfortunately requires. `sudo sysctl vm.mmap_min_addr=0` fixes this and will be attempted by the launcher scripts. To apply this fix permanently:
 ```
 echo "vm.mmap_min_addr=0" | sudo tee /etc/sysctl.d/10-mmap_min_addr-zero.conf
 ```
+and reboot.
 
 # Building your own
 
@@ -99,3 +93,5 @@ the AppImages. This is because FUSE cannot be used in the Docker build process, 
 
 
 [^1]: The path `$HOME/.local/bin` can in fact vary. See output of `systemd-path user-binaries`.
+[^2]: Some libraries are in fact excluded and this can sometimes cause issues. Please file an issue if you encounter "missing symbol" or similar errors that point to ".so" files
+[^3]: More specifically, at the time of writing, this is FUSE2 opposed to FUSE3. FUSE3 support is [on its way](https://github.com/AppImage/AppImageKit/issues/877). Some users (most notably Ubuntu 22.04 users) may need to manually `apt install libfuse2` to run AppImages for now.

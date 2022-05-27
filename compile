@@ -18,6 +18,7 @@
 		--detach \
 		--device /dev/fuse \
 		--cap-add SYS_ADMIN \
+		--security-opt label:disable \
 		--security-opt apparmor:unconfined \
 		-v "$(realpath ./build-stage2):/build:ro" \
 		-v "$(realpath ./output):/output" \

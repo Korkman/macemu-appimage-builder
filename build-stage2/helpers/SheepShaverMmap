@@ -7,6 +7,7 @@
 	
 	me="$0"
 	pauseAfterExecution="no"
+	skipMmapChecks=${skipMmapChecks:-no}
 	
 	# function to display a terminal in the likely event we were started via a GUI menu
 	runVisible() {
@@ -43,6 +44,7 @@ https://wiki.debian.org/mmap_min_addr
 "Failed. SheepShaver will probably crash."
 			echo "Press enter to continue ..."; read -r enter
 		else
+			skipMmapChecks="yes"
 			echo \
 "Success. The setting will revert after a host reboot."
 			echo "Press enter to continue ..."; read -r enter
@@ -68,12 +70,16 @@ https://wiki.debian.org/mmap_min_addr
 			echo "Failed. SheepShaver will probably crash."
 			echo "Press enter to continue ..."; read -r enter
 		else
+			skipMmapChecks="yes"
 			echo \
 "Success. The setting will revert after a host reboot."
 			echo "Press enter to continue ..."; read -r enter
 		fi
 		
-	else
+	fi
+	
+	if [ "$skipMmapChecks" != "yes" ]
+	then
 		# default case: detect low memory mmap status
 		# SELinux
 		if command -v selinuxenabled > /dev/null && selinuxenabled && sestatus -b | grep -E "mmap_low_allowed\\s+off" > /dev/null

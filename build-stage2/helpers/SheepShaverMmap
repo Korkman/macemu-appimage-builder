@@ -3,6 +3,18 @@
 	# fix SheepShaver startup: test for and change vm.mmap_min_addr if not set to 0,
 	# give instructions for permanent solution
 	set -eu
+	
+	# function to show a GUI dialog if possible
+	# must have a blocking terminal for the dialog, do not use x-terminal-emulator
+	runVisible() {
+		if command -v xterm > /dev/null
+		then
+			xterm -e $@
+		else
+			$@
+		fi
+	}
+	
 	if [ "${1:-nada}" = "fix_mmap" ]
 	then
 		echo \
@@ -22,8 +34,8 @@ containing vm.mmap_min_addr=0"
 		
 		if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
 		then
-			# must have a blocking terminal for the dialog, do not use x-terminal-emulator
-			xterm -e "$0" "fix_mmap"
+			# re-run self visible to show dialog
+			runVisible "$0" "fix_mmap"
 			if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
 			then
 				# sudo failed

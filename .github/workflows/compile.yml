@@ -27,7 +27,7 @@ jobs:
         run: mv output macemu-appimages
       
       - name: Create tar.gz
-        run: tar -czvf build-result.tar.gz macemu-appimages
+        run: tar -czvf build-result.tar.gz macemu
       
       # save artifacts
       - uses: actions/upload-artifact@v3

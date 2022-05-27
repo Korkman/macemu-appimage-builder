@@ -42,7 +42,7 @@ jobs:
         run: ls -al
       
       - name: version
-        run: echo "::set-output name=version::$(date +%Y-%m-%d)"
+        run: echo "::set-output name=version::$(date +%Y-%m-%d.%s)"
         id: version
         
       - name: Rename release

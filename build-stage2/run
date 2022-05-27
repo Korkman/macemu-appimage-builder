@@ -20,6 +20,7 @@
 	cp /build/BasiliskII.desktop /output/installFiles/
 	cp /build/BasiliskIIGUI.desktop /output/installFiles/
 
+	(
 	linuxdeploy \
 		--appdir AppDir \
 		--executable ./BasiliskII \
@@ -27,11 +28,14 @@
 		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/BasiliskII.desktop \
 		--icon-file=BasiliskII.png \
-		--output appimage
+		--output appimage 2>&1 | tee /tmp/linuxdeploy-BasiliskII
 
 	# add to output
 	cp ./*.AppImage /output/macemuAppImages/
-
+	
+	) &
+	job1Pid=$!
+	
 	# pack SheepShaver & SheepShaverGUI
 	cd /usr/local/src/macemu/SheepShaver/src/Unix
 
@@ -45,6 +49,7 @@
 	cp /build/SheepShaver.desktop /output/installFiles/
 	cp /build/SheepShaverGUI.desktop /output/installFiles/
 	
+	(
 	linuxdeploy \
 		--appdir AppDir \
 		--executable ./SheepShaver \
@@ -52,11 +57,33 @@
 		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/SheepShaver.desktop \
 		--icon-file=SheepShaver.png \
-		--output appimage
-
+		--output appimage 2>&1 | tee /tmp/linuxdeploy-SheepShaver
+	
 	# add to output
 	cp ./*.AppImage /output/macemuAppImages/
-
+	) &
+	job2Pid=$!
+	
+	if ! wait $job1Pid
+	then
+		wait $job2Pid || echo
+		echo
+		echo
+		echo "linuxdeploy BasiliskII failed, repeating output on stderr"
+		sleep 1
+		cat /tmp/linuxdeploy-BasiliskII >&2
+		exit 2
+	fi
+	if ! wait $job2Pid
+	then
+		echo
+		echo
+		echo "linuxdeploy SheepShaver failed, repeating output on stderr"
+		sleep 1
+		cat /tmp/linuxdeploy-SheepShaver >&2
+		exit 3
+	fi
+	
 	# rename output files to be more readable
 	cd /output/macemuAppImages
 	mv BasiliskII-*.AppImage BasiliskII.AppImage

@@ -37,7 +37,7 @@ jobs:
         run: ls -al
       
       - name: version
-        run: echo "::set-output name=version::$(date +%Y-%m-%d)"
+        run: echo "::set-output name=version::$(date +%Y-%m-%d.%s)"
         id: version
         
       - name: Rename release
@@ -46,7 +46,7 @@ jobs:
       # create a release
       - uses: "ncipollo/release-action@v1"
         with:
-          #tag: "${{ github.ref }}"
+          tag: "${{ steps.version.outputs.version }}"
           #token: "${{ secrets.GITHUB_TOKEN }}"
           name: "${{ steps.version.outputs.version }}"
           prerelease: false

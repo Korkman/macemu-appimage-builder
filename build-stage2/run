@@ -25,6 +25,8 @@
 	linuxdeploy \
 		--appdir AppDir \
 		--executable ./BasiliskII \
+		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
+		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/BasiliskII.desktop \
 		--icon-file=BasiliskII.png \
 		--output appimage
@@ -32,6 +34,8 @@
 	linuxdeploy \
 		--appdir AppDirGUI \
 		--executable ./BasiliskIIGUI \
+		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
+		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/BasiliskIIGUI.desktop \
 		--icon-file=BasiliskIIGUI.png \
 		--output appimage
@@ -56,6 +60,8 @@
 	linuxdeploy \
 		--appdir AppDir \
 		--executable ./SheepShaver \
+		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
+		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/SheepShaver.desktop \
 		--icon-file=SheepShaver.png \
 		--output appimage
@@ -63,6 +69,8 @@
 	linuxdeploy \
 		--appdir AppDirGUI \
 		--executable ./SheepShaverGUI \
+		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
+		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
 		--desktop-file=/build/SheepShaverGUI.desktop \
 		--icon-file=SheepShaverGUI.png \
 		--output appimage

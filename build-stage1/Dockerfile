@@ -37,7 +37,7 @@ RUN ./configure
 WORKDIR /usr/local/src/xen/tools/blktap2/vhd/lib
 # patch Makefile to allow some impurities
 RUN mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict
-RUN make -j 10
+RUN make -j $(nproc)
 RUN DESTDIR=/usr/lib make install
 RUN cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
 
@@ -72,7 +72,7 @@ RUN \
 #	--enable-xf86-vidmode \
 #	--enable-fbdev-dga \
 
-RUN make -j 24
+RUN make -j $(nproc)
 RUN strip BasiliskII
 RUN strip BasiliskIIGUI
 RUN make install DESTDIR=AppDir
@@ -94,7 +94,7 @@ RUN  \
 
 #	--enable-standalone-gui \ # combining the standalone gui with bincue breaks the build
 
-RUN make -j 24
+RUN make -j $(nproc)
 RUN strip SheepShaver
 RUN make install DESTDIR=AppDir
 RUN mv SheepShaver SheepShaver.good
@@ -111,7 +111,7 @@ RUN  \
 	--with-x \
 	--without-esd \
 	;
-RUN make -j 24
+RUN make -j $(nproc)
 RUN strip SheepShaverGUI
 RUN make install DESTDIR=AppDir
 RUN rm SheepShaver

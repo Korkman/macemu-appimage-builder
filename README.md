@@ -45,11 +45,7 @@ AppImages are portable Linux applications containing all the libraries required 
 only dependency is having FUSE available (which basically every sane Linux desktop environment has).[^3]
 
 ## If SheepShaver doesn't start
-Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows mmaps to start at address 0, which SheepShaver unfortunately requires. `sudo sysctl vm.mmap_min_addr=0` fixes this and will be attempted by the launcher scripts. To apply this fix permanently:
-```
-echo "vm.mmap_min_addr=0" | sudo tee /etc/sysctl.d/10-mmap_min_addr-zero.conf
-```
-and reboot.
+Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires. The launchers provide further instructions.
 
 # Building your own
 

@@ -16,8 +16,8 @@
 	sleep 1
 	# stage 2: pack appimage
 	# cleanup
-	docker kill macemu-build-stage2 > /dev/null || true
-	docker rm macemu-build-stage2 > /dev/null || true
+	docker kill macemu-build-stage2 > /dev/null 2>&1 || true
+	docker rm macemu-build-stage2 > /dev/null 2>&1 || true
 	# prepare and run container (a running container is easier to debug)
 	modprobe fuse
 	# for debugging:
@@ -39,8 +39,8 @@
 	sleep 1
 	
 	# cleanup
-	docker kill macemu-build-stage2 > /dev/null || true
-	docker rm macemu-build-stage2 > /dev/null || true
+	docker kill macemu-build-stage2 > /dev/null 2>&1 || true
+	docker rm macemu-build-stage2 > /dev/null 2>&1 || true
 
 	# convenience: chown the output directory to the sudo caller
 	if [ "${SUDO_USER:-}" != "" ]

@@ -3,6 +3,13 @@
 {
 	set -eu
 	
+	# must be root to control docker
+	if [ "$USER" != "root" ]
+	then
+		sudo "$0"
+		exit
+	fi
+
 	# stage 1: download and compile
 	docker build --tag macemu-build-stage1 build-stage1
 	echo -e "\n\nBUILD STAGE 1 COMPLETE\n\n"

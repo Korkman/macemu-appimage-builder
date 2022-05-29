@@ -167,4 +167,4 @@ RUN cp /build/helpers/* /output/
 
 WORKDIR /usr/local/src/macemu
 
-CMD [ "/bin/bash", "-c", "rm -rf /externalOutput/*; cp -ax /output/* /externalOutput/" ]
+CMD [ "/bin/bash", "-c", "echo -n '.'; rm -rf /externalOutput/*; echo -n '.'; cp -ax /output/* /externalOutput/" ]

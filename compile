@@ -22,6 +22,8 @@
 	modprobe fuse
 	# for debugging:
 	# sudo docker run --rm -it macemu-build-stage1 /bin/bash
+	# with fuse:
+	# sudo docker run --rm -it --device /dev/fuse --cap-add SYS_ADMIN --security-opt label:disable --security-opt apparmor:unconfined macemu-build-stage1 /bin/bash
 	docker run \
 		--name macemu-build-stage2 \
 		--detach \

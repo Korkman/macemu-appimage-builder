@@ -9,6 +9,30 @@
 	pauseAfterExecution="no"
 	skipMmapChecks=${skipMmapChecks:-no}
 	
+	# wrapper to test if sudo is available
+	sudo() {
+		if ! command -v sudo > /dev/null
+		then
+			echo \
+"sudo is unavailable. Please perform this step with root permissions:" \
+			>&2
+			echo "$@" >&2
+			echo >&2
+			return 1
+		elif ! command sudo --validate > /dev/null 2>&1
+		then
+			echo \
+"Your account is not permitted to use sudo (aka \"not in sudoers\").
+Please perform this step with root permissions:" \
+			>&2
+			echo "$@" >&2
+			echo >&2
+			return 1
+		else
+			command sudo "$@"
+		fi
+	}
+	
 	# function to display a terminal in the likely event we were started via a GUI menu
 	runVisible() {
 		# try a few terminals

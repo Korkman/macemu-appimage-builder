@@ -96,5 +96,12 @@ RUN make -j $(nproc)
 RUN strip SheepShaver
 RUN make install DESTDIR=AppDir
 
+# copy theme files to AppDirs
+RUN apt-get -y install gtk2-engines
+WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
+RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
+WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
+RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
+
 WORKDIR /usr/local/src/macemu
 CMD [ "/bin/bash", "-c", "while true; do sleep 1; done" ]

@@ -40,12 +40,13 @@ In your home directory. Unless…
 
 …you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within `macemuAppImages`. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
+## If SheepShaver doesn't start
+Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires. The launchers provide further instructions.
+
 ## AppImage compatibility
 AppImages are portable Linux applications containing all the libraries required to run[^2]. Their
 only dependency is having FUSE available (which basically every sane Linux desktop environment has).[^3]
-
-## If SheepShaver doesn't start
-Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires. The launchers provide further instructions.
+If you don't have FUSE available, your can extract the contained files with the startup argument --appimage-extract. The contained executable "AppRun" will run the application.
 
 # Building your own
 
@@ -68,7 +69,7 @@ Once you are satisfied with your build you can purge the created Docker images t
 disk space with
 
 ```
-docker rmi macemu-build-stage1
+docker rmi macemu-build
 ```
 
 and possibly
@@ -80,12 +81,13 @@ docker system prune
 and untagged images)
 
 ## The build process explained
-Stage 1 builds while creating a Docker image. This makes base distribution easily swappable and keeps
+Builds are done with a Docker image. This makes base distribution easily swappable and keeps
 build dependencies in an easy to purge image. Also each step inside the Dockerfile is cached, so iterations
 are quick when something breaks or changes are made.
 
-Stage 2 runs linuxdeploy inside a Docker container (with elevated privileges so FUSE works) to create
-the AppImages. This is because FUSE cannot be used in the Docker build process, unfortunately.
+Through the use of [multi-stage](https://docs.docker.com/develop/develop-images/multistage-build/) and [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/), the process is partially parallelized.
+
+The stage "buildenv" prepares all build dependencies, stages "BasiliskII" and "SheepShaver" compile and package. The stage "final" copies results from all stages to "/output" within the final image. The script `compile` will then extract "/output" to the host "./output".
 
 
 [^1]: The path `$HOME/.local/bin` can in fact vary. See output of `systemd-path user-binaries`.

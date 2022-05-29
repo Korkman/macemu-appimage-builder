@@ -9,41 +9,17 @@
 		sudo "$0"
 		exit
 	fi
-
-	# stage 1: download and compile
-	docker build --tag macemu-build-stage1 build-stage1
-	echo -e "\n\nBUILD STAGE 1 COMPLETE\n\n"
-	sleep 1
-	# stage 2: pack appimage
-	# cleanup
-	docker kill macemu-build-stage2 > /dev/null 2>&1 || true
-	docker rm macemu-build-stage2 > /dev/null 2>&1 || true
-	# prepare and run container (a running container is easier to debug)
-	modprobe fuse
-	# for debugging:
-	# sudo docker run --rm -it macemu-build-stage1 /bin/bash
-	# with fuse:
-	# sudo docker run --rm -it --device /dev/fuse --cap-add SYS_ADMIN --security-opt label:disable --security-opt apparmor:unconfined macemu-build-stage1 /bin/bash
-	docker run \
-		--name macemu-build-stage2 \
-		--detach \
-		--device /dev/fuse \
-		--cap-add SYS_ADMIN \
-		--security-opt label:disable \
-		--security-opt apparmor:unconfined \
-		-v "$(realpath ./build-stage2):/build:ro" \
-		-v "$(realpath ./output):/output" \
-		macemu-build-stage1
-	# run linuxdeploy inside container
-	docker exec macemu-build-stage2 /build/run
-
-	echo -e "\n\nBUILD STAGE 2 COMPLETE\n\n"
-	sleep 1
 	
-	# cleanup
-	docker kill macemu-build-stage2 > /dev/null 2>&1 || true
-	docker rm macemu-build-stage2 > /dev/null 2>&1 || true
-
+	# new single stage build
+	sudo DOCKER_BUILDKIT=1 docker build --tag macemu-build docker
+	
+	# for debugging:
+	# sudo docker run --rm -it macemu-build /bin/bash
+	
+	sudo docker run --rm -it \
+		-v "$(realpath ./output):/externalOutput" \
+		macemu-build
+	
 	# convenience: chown the output directory to the sudo caller
 	if [ "${SUDO_USER:-}" != "" ]
 	then

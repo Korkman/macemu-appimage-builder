@@ -16,7 +16,7 @@
 	# for debugging:
 	# sudo docker run --rm -it macemu-build /bin/bash
 	
-	sudo docker run --rm -it \
+	sudo docker run --rm \
 		-v "$(realpath ./output):/externalOutput" \
 		macemu-build
 	

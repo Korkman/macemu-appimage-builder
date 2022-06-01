@@ -17,6 +17,6 @@ jobs:
     with:
       platform: i386
       target_stage: combined
-      workflow_file: compile-and-update-continuous-i386.yml
+      workflow_file: i386.yml
       workflow_conclusion: in_progress
     

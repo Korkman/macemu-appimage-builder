@@ -130,7 +130,7 @@
 		;
 		exit
 	else
-		TARGET="${2:-final}"
+		TARGET="${2:-combined}"
 		echo "Building stage $TARGET (packaging: $PACKAGING)"
 		sleep 2
 		

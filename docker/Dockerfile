@@ -220,7 +220,7 @@ COPY --from=buildenv-basilisk2 /output /
 FROM scratch AS sheepshaver
 COPY --from=buildenv-sheepshaver /output /
 
-FROM scratch AS final
+FROM scratch AS combined
 # reduce to final output
 COPY --from=buildenv-sheepshaver /output /
 COPY --from=buildenv-basilisk2 /output /

@@ -62,6 +62,7 @@ jobs:
           # default false
           #skip_unpack: true
           workflow_conclusion: ${{ github.event.inputs.workflow_conclusion }}
+          check_artifacts: true
           
       - name: List files for the log
         run: ls -al

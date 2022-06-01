@@ -40,16 +40,16 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Compile
-        run: sudo ./compile $INPUT_PLATFORM $INPUT_TARGET_STAGE
+        run: sudo ./compile ${{ github.event.inputs.platform }} ${{ github.event.inputs.target_stage }}
       
       - name: Make nice directory name
         run: mv output macemu
       
       - name: Create tar.gz
-        run: tar -czvf build-result-$INPUT_PLATFORM-$INPUT_TARGET_STAGE.tar.gz macemu
+        run: tar -czvf build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz macemu
       
       # save artifacts
       - uses: actions/upload-artifact@v3
         with:
-          name: build-result-$INPUT_PLATFORM-$INPUT_TARGET_STAGE
-          path: build-result-$INPUT_PLATFORM-$INPUT_TARGET_STAGE.tar.gz
+          name: build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}
+          path: build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz

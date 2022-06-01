@@ -64,14 +64,14 @@ jobs:
         with:
           #github_token: ${{secrets.GITHUB_TOKEN}}
           # Required, workflow file name or ID
-          workflow: ${{ github.event.inputs.workflow_file }}
+          workflow: ${{ inputs.workflow_file }}
           branch: main
           # artifact name downloaded
-          name: macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}
+          name: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}
           # Optional, choose to skip unpacking the downloaded artifact(s)
           # default false
           #skip_unpack: true
-          workflow_conclusion: ${{ github.event.inputs.workflow_conclusion }}
+          workflow_conclusion: ${{ inputs.workflow_conclusion }}
           check_artifacts: true
           
       - name: List files for the log
@@ -88,6 +88,6 @@ jobs:
           #generateReleaseNotes: false
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
-          artifacts: "macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz"
+          artifacts: "macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz"
           artifactContentType: application/gzip
   

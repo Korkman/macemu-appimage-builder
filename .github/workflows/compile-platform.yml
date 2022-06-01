@@ -1,4 +1,4 @@
-name: Compile amd64
+name: Compile platform
 
 # Controls when the workflow will run
 on:

@@ -18,5 +18,4 @@ jobs:
       platform: amd64
       target_stage: combined
       workflow_file: amd64.yml
-      workflow_conclusion: in_progress
     

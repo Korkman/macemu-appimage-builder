@@ -49,7 +49,7 @@ jobs:
           # Optional, choose to skip unpacking the downloaded artifact(s)
           # default false
           #skip_unpack: true
-          workflow_conclusion: ${{ inputs.workflow_conclusion }}
+          workflow_conclusion: ""
           search_artifacts: true
           
       - name: List files for the log

@@ -1,7 +1,7 @@
 # macemu-appimage-builder
 Builds the popular classic Macintosh emulators BasiliskII and SheepShaver
-from source for 64-bit x86 Linux and creates AppImages which run instantly on
-many Linux desktops.
+from source for 32-bit and 64-bit x86 Linux and creates AppImages which
+run instantly on many Linux desktops.
 
 Download the [latest build](https://github.com/Korkman/macemu-appimage-builder/releases/latest)
 
@@ -30,7 +30,9 @@ can skip the launchers if you want to.
 
 ## Install (optional)
 The install script will copy launchers and AppImages to `$HOME/.local/bin/`[^1] and create
-menu entries for the application menu for convenience.
+menu entries for the application menu for convenience. You may have to log out and log in
+for the menu entries to appear. Also, make sure your PATH variable contains the installer
+destination directory (true for sane Linux distros).
 
 ## Where to put startup.wav
 Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it right into `macemuAppImages`. When installed it is located in `$HOME/.local/bin/macemuAppImages`[^1].
@@ -41,20 +43,25 @@ In your home directory. Unless…
 …you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within `macemuAppImages`. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ## If SheepShaver doesn't start
-Try running SheepShaver in a terminal to see constructive error messages. One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires. The launchers provide further instructions.
+Try running SheepShaver in a terminal to see constructive error messages.
+One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires.
+The launchers provide further instructions.
 
 ## AppImage compatibility
-AppImages are portable Linux applications containing all the libraries required to run[^2]. Their
-only dependency is having FUSE available (which basically every sane Linux desktop environment has).[^3]
-If you don't have FUSE available, your can extract the contained files with the startup argument --appimage-extract. The contained executable "AppRun" will run the application.
+AppImages are portable Linux applications containing all the libraries required to run[^2].
+Their only dependency is having FUSE available (which basically every sane Linux desktop environment has).[^3]
+If you don't have FUSE available, your can extract the contained files with the startup argument --appimage-extract.
+The contained executable "AppRun" will run the application.
 
 # Building your own
 
-## Prerequisites
-* 64-bit x86 Linux system
+## Prerequisites for building
+* Any Linux system
 * Docker
+* qemu-user with binfmt support for cross architecture builds
+<br>(for Debian, `apt-get install qemu-user-static`)
 
-If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/build-stage1/Dockerfile) might still be of help.
+If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/docker/Dockerfile) might still be of help.
 
 ## Compile
 ```
@@ -62,22 +69,30 @@ git clone https://github.com/Korkman/macemu-appimage-builder.git
 cd macemu-appimage-builder
 sudo ./compile
 ```
-The process will delete and reproduce all files in the directory "output".
+The process will delete all files in the directory "output" and produce a new build.
+`compile` takes up to three optional arguments: platform, "debug" and target stage.
+Platform choices can be found within `compile`, target stage choices within the Dockerfile.
+Examples:
+```
+# build combined package for amd64
+sudo ./compile amd64
+# build BasiliskII package only, for amd64
+sudo ./compile amd64 basilisk2
+# enter debug shell for the SheepShaver build environment in i386
+sudo ./compile i386 debug buildenv-sheepshaver
+```
+The "debug" mode enters a shell at the desired stage instead of producing an output directory.
+The compile directory is available in `/compiledir`.
 
 ## Purge docker images
 Once you are satisfied with your build you can purge the created Docker images to reclaim
 disk space with
 
 ```
-docker rmi macemu-build
+sudo docker rmi $(docker images -q macemu-build)
+sudo docker system prune
 ```
-
-and possibly
-
-```
-docker system prune
-```
-(this is a generic command to delete all unused
+(the latter is a generic command to delete all unused
 and untagged images)
 
 ## The build process explained

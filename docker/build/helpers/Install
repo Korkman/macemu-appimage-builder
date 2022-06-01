@@ -21,39 +21,61 @@
 	mkdir -p "$binDir"
 	mkdir -p "$iconsDir"
 	mkdir -p "$appsDir"
-
-	echo "Installing binaries to $binDir"
-
-	# install AppImages and helper scripts in ~/.local/bin
-	cp -a ./macemuAppImages "$binDir/"
-	cp -a ./SheepShaver* "$binDir/"
-	cp -a ./BasiliskII* "$binDir/"
-
+	
 	echo "Installing icons to $iconsDir"
 	cp -a ./installFiles/*.png "$iconsDir/"
 	
-	echo "Installing desktop files to $appsDir"
-
-	cp ./installFiles/BasiliskII.desktop "$appsDir/"
-	cp ./installFiles/BasiliskIIGUI.desktop "$appsDir/"
-	cp ./installFiles/SheepShaver.desktop "$appsDir/"
-	cp ./installFiles/SheepShaverGUI.desktop "$appsDir/"
-
-	echo "Cleaning up obsolete stuff from previous installs ..."
-	rm -f "$binDir/macemuAppImages/SheepShaver"
-	rm -f "$binDir/macemuAppImages/SheepShaverGUI"
-	rm -f "$binDir/macemuAppImages/BasiliskII"
-	rm -f "$binDir/macemuAppImages/BasiliskIIGUI"
-
-	# Renaming previous .home directories ...
-	if [ -e "$binDir/macemuAppImages/SheepShaver.home" -a ! -e "$binDir/macemuAppImages/SheepShaver.AppImage.home" ]
+	# install AppImages scripts to ~/.local/bin/macemuAppImages
+	echo "Installing binaries to $binDir/macemuAppImages/"
+	cp -a ./macemuAppImages "$binDir/"
+	
+	if [ -e ./BasiliskII ]
 	then
-		mv "$binDir/macemuAppImages/SheepShaver.home" "$binDir/macemuAppImages/SheepShaver.AppImage.home"
+		echo "Installing BasiliskII launcher"
+		
+		# install helper scripts to ~/.local/bin
+		cp -a ./BasiliskII* "$binDir/"
+
+		echo "Installing desktop files to $appsDir"
+
+		cp ./installFiles/BasiliskII.desktop "$appsDir/"
+		cp ./installFiles/BasiliskIIGUI.desktop "$appsDir/"
+
+		echo "Cleaning up obsolete stuff from previous installs ..."
+		rm -f "$binDir/macemuAppImages/BasiliskII"
+		rm -f "$binDir/macemuAppImages/BasiliskIIGUI"
+
+		# Renaming previous .home directories ...
+		if [ -e "$binDir/macemuAppImages/BasiliskII.home" -a ! -e "$binDir/macemuAppImages/BasiliskII.AppImage.home" ]
+		then
+			mv "$binDir/macemuAppImages/BasiliskII.home" "$binDir/macemuAppImages/BasiliskII.AppImage.home"
+		fi
 	fi
-	if [ -e "$binDir/macemuAppImages/BasiliskII.home" -a ! -e "$binDir/macemuAppImages/BasiliskII.AppImage.home" ]
+	
+	if [ -e ./SheepShaver ]
 	then
-		mv "$binDir/macemuAppImages/BasiliskII.home" "$binDir/macemuAppImages/BasiliskII.AppImage.home"
+		echo "Installing SheepShaver launcher"
+		
+		# install helper scripts to ~/.local/bin
+		cp -a ./SheepShaver* "$binDir/"
+
+		echo "Installing desktop files to $appsDir"
+
+		cp ./installFiles/SheepShaver.desktop "$appsDir/"
+		cp ./installFiles/SheepShaverGUI.desktop "$appsDir/"
+
+		echo "Cleaning up obsolete stuff from previous installs ..."
+		rm -f "$binDir/macemuAppImages/SheepShaver"
+		rm -f "$binDir/macemuAppImages/SheepShaverGUI"
+
+		# Renaming previous .home directories ...
+		if [ -e "$binDir/macemuAppImages/SheepShaver.home" -a ! -e "$binDir/macemuAppImages/SheepShaver.AppImage.home" ]
+		then
+			mv "$binDir/macemuAppImages/SheepShaver.home" "$binDir/macemuAppImages/SheepShaver.AppImage.home"
+		fi
 	fi
+	
+	
 
 	echo "Done."
 

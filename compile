@@ -1,36 +1,169 @@
 #! /bin/bash
 
+# syntax:
+# ./compile [ PLATFORM [ debug ] [ DOCKERFILE_STAGE ] ]
+
+# usage examples:
+
+# build combined package for amd64
+#   sudo ./compile amd64
+# build BasiliskII package only, for amd64
+#   sudo ./compile amd64 basilisk2
+# enter debug shell for the SheepShaver build environment in i386
+#   sudo ./compile i386 debug buildenv-sheepshaver
+#
+
 {
 	set -eu
-	
+	set -o pipefail
+
 	# must be root to control docker
 	if [ "$USER" != "root" ]
 	then
-		sudo "$0"
+		sudo "$0" $@
 		exit
 	fi
 	
-	# new single stage build
-	sudo DOCKER_BUILDKIT=1 docker build --tag macemu-build docker
+	PLATFORM=${1:-}
+	LXDEPLOY_ARCH=""
+	PACKAGING="none"
+	SKIP_VHD="y"
+	SKIP_BINCUE="n"
+	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
+	case "${PLATFORM}" in
+		""|"amd64")
+			echo "Building amd64"
+			DOCKER_SUFFIX="amd64"
+			DOCKER_PLATFORM="linux/x86-64"
+			DISTRO="debian:bullseye"
+			SKIP_VHD="n"
+			PACKAGING="linuxdeploy"
+			LXDEPLOY_ARCH="x86_64"
+		;;
+		"i386")
+			echo "Building ${PLATFORM}"
+			DOCKER_SUFFIX="i386"
+			DOCKER_PLATFORM="linux/386"
+			DISTRO="debian:bullseye"
+			SKIP_VHD="y"
+			PACKAGING="linuxdeploy"
+			LXDEPLOY_ARCH="i386"
+		;;
+		"pi1"|"pi0")
+			echo "Building Rasperry ${PLATFORM} (pi1, pi0) [EXPERIMENTAL]"
+			echo "WARNING: SheepShaver is known not to build on this platform"
+			echo "WARNING: No packager available for this platform"
+			DOCKER_SUFFIX="pi1"
+			DOCKER_PLATFORM="linux/arm/v5"
+			DISTRO="balenalib/raspberry-pi-debian:bullseye-build"
+		;;
+		"pi2")
+			echo "Building Raspberry ${PLATFORM} [EXPERIMENTAL]"
+			echo "WARNING: SheepShaver is known not to build on this platform"
+			echo "WARNING: No packager available for this platform"
+			DOCKER_SUFFIX="pi2"
+			DOCKER_PLATFORM="linux/arm/v7"
+			DISTRO="balenalib/raspberry-pi2-debian:bullseye-build"
+			#DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
+		;;
+		"pi3"|"pi4"|"pi0v2")
+			echo "Building Rasperry ${PLATFORM} (pi3, pi4, pi0v2) [EXPERIMENTAL]"
+			echo "WARNING: SheepShaver is known not to build on this platform"
+			echo "WARNING: No packager available for this platform"
+			DOCKER_SUFFIX="pi3"
+			DOCKER_PLATFORM="linux/arm/v7"
+			DISTRO="balenalib/raspberrypi3-debian:bullseye-build"
+		;;
+		"pi4-64")
+			echo "Building Rasperry ${PLATFORM} (raspberrypi4 64-bit) [EXPERIMENTAL]"
+			echo "WARNING: SheepShaver is known not to build on this platform"
+			echo "WARNING: No packager available for this platform"
+			DOCKER_SUFFIX="pi4-64"
+			DOCKER_PLATFORM="linux/arm64"
+			DISTRO="balenalib/raspberrypi4-64-debian:bullseye-build"
+			#DISTRO="debian:bullseye"
+			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
+		;;
+		*)
+			echo "Invalid build platform specified: ${1}"
+			exit 1
+		;;
+	esac
 	
-	# for debugging:
-	# sudo docker run --rm -it macemu-build /bin/bash
+	# prepare empty output directory
+	mkdir -p ./output
+	rm -rf ./output/*
 	
-	echo -n "Extracting files ..."
-	sudo docker run --rm \
-		-v "$(realpath ./output):/externalOutput" \
-		macemu-build
+	# DOCKER_BUILDKIT=1 currently required for custom --output
+	
+	touch ./compile.log
+	# convenience: chown logs to the sudo caller
+	if [ "${SUDO_USER:-}" != "" ]
+	then
+		chown "$SUDO_USER" -R ./compile.log
+	fi
+	
+	if [ "${2:-}" = "debug" ]
+	then
+		TARGET="${3}"
+		echo "Debugging stage $TARGET"
+		sleep 2
 		
-	echo
+		DOCKER_BUILDKIT=1 docker build \
+			--platform $DOCKER_PLATFORM \
+			--build-arg DISTRO=$DISTRO \
+			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
+			--build-arg PACKAGING=$PACKAGING \
+			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \
+			--build-arg "MACEMU_GIT_ARGS=$MACEMU_GIT_ARGS" \
+			--tag macemu-build:$TARGET-$DOCKER_SUFFIX \
+			--target $TARGET \
+			docker \
+			2>&1 | tee compile.log \
+		;
+		docker run --rm -it \
+			--platform $DOCKER_PLATFORM \
+			-v "$(realpath ./):/compiledir" \
+			macemu-build:$TARGET-$DOCKER_SUFFIX \
+			/bin/bash \
+		;
+		exit
+	else
+		TARGET="${2:-final}"
+		echo "Building stage $TARGET (packaging: $PACKAGING)"
+		sleep 2
+		
+		DOCKER_BUILDKIT=1 docker build \
+			--platform $DOCKER_PLATFORM \
+			--build-arg DISTRO=$DISTRO \
+			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
+			--build-arg PACKAGING=$PACKAGING \
+			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \
+			--build-arg "MACEMU_GIT_ARGS=$MACEMU_GIT_ARGS" \
+			--tag macemu-build:$TARGET-$DOCKER_SUFFIX \
+			--target $TARGET \
+			--output=type=local,dest=./output \
+			docker \
+			2>&1 | tee compile.log \
+		;
+		
+		#docker run --platform=$DOCKER_PLATFORM --rm \
+		#	-v "$(realpath ./output):/externalOutput" \
+		#	macemu-build:$TARGET-$DOCKER_SUFFIX \
+		#	/bin/bash -c "cp -ax /output/* /externalOutput/" \
+		#;
+	fi
 	
 	# convenience: chown the output directory to the sudo caller
 	if [ "${SUDO_USER:-}" != "" ]
 	then
-		chown "$SUDO_USER" -R output
+		chown "$SUDO_USER" -R ./output
 	fi
 	
-	echo -e "\n\nBUILD COMPLETE\nOutput files in directory \"output\"\n\n"
-	sleep 1
-
+	echo "BUILD COMPLETE"
+	find ./output
+	
 	exit
 }

@@ -1,4 +1,10 @@
-FROM debian:bullseye AS buildenv
+ARG DISTRO=debian:bullseye
+
+
+FROM $DISTRO AS buildenv
+ARG SKIP_VHD="n"
+ARG PACKAGING="linuxdeploy"
+ARG LXDEPLOY_ARCH=""
 
 ENV DEBIAN_FRONTEND='noninteractive'
 
@@ -10,8 +16,6 @@ RUN apt-get -y install \
 	automake gcc \
 	libgtk2.0-dev libsdl2-dev \
 	libvdeplug-dev \
-	x11proto-xf86dga-dev \
-	libxxf86dga-dev \
 	# for xen \
 	bin86 bcc liblzma-dev python \
 	python-dev iasl libncurses5-dev \
@@ -21,47 +25,66 @@ RUN apt-get -y install \
 	# to convert .ico files \
 	graphicsmagick
 
+#	x11proto-xf86dga-dev \
+#	libxxf86dga-dev \
+
+COPY build /build
+
+# get some architecture "variables" going
+SHELL [ "/bin/bash", "-c" ]
+RUN /build/detect-archdir.sh
+RUN echo "ARCHDIR: $(</ARCHDIR)"
+
 
 # download xen (libvhd source)
 WORKDIR /usr/local/src/xen
-RUN git clone --depth 1 https://github.com/mirage/xen.git .
+RUN [ "$SKIP_VHD" = y ] || git clone --depth 1 https://github.com/mirage/xen.git .
 
 # download linuxdeploy (AppImage builder)
 WORKDIR /usr/local/bin
-RUN wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -O linuxdeploy
+		
+RUN [ "$PACKAGING" != "linuxdeploy" ] || wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${LXDEPLOY_ARCH}.AppImage -O linuxdeploy
 # extract linuxdeploy to use it without FUSE within build process
-RUN chmod a+x linuxdeploy && \
+RUN [ "$PACKAGING" != "linuxdeploy" ] || (chmod a+x linuxdeploy && \
 	./linuxdeploy --appimage-extract && \
 	rm ./linuxdeploy && \
-	ln -s /usr/local/bin/squashfs-root/AppRun /usr/local/bin/linuxdeploy
+	ln -s /usr/local/bin/squashfs-root/AppRun /usr/local/bin/linuxdeploy)
 
 # compile libvhd from Xen
+# added for attempting to compile libvhd on Xen arm64:
+RUN [ "$SKIP_VHD" = y ] || apt-get -y install libfdt-dev
 WORKDIR /usr/local/src/xen/tools
-RUN ./configure
+RUN [ "$SKIP_VHD" = y ] || ./configure
 WORKDIR /usr/local/src/xen/tools/blktap2/vhd/lib
 # patch Makefile to allow some impurities
-RUN mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict
-RUN make -j $(nproc)
-RUN DESTDIR=/usr/lib make install
-RUN cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
+RUN [ "$SKIP_VHD" = y ] || (mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict)
+# build xentools libvhd
+RUN [ "$SKIP_VHD" = y ] || make -j $(nproc)
+RUN [ "$SKIP_VHD" = y ] || DESTDIR=/usr/lib make install
+RUN [ "$SKIP_VHD" = y ] || cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
 
 # download macemu (BasiliskII and SheepShaver source)
 WORKDIR /usr/local/src/macemu
 
 # some variants of source to build
-RUN git clone --depth 1 https://github.com/kanjitalk755/macemu .
-#RUN git clone --depth 1 --branch v1.0.0 https://github.com/kanjitalk755/macemu .
-#RUN git clone --depth 1 https://github.com/cebix/macemu .
+ARG MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
+RUN git clone $MACEMU_GIT_ARGS .
 
 # required for older codebases
 #RUN apt-get -y install libsdl1.2-dev
+
+# including themes for a fallback startup option APP_GTK_THEME=X
 RUN apt-get -y install gtk2-engines
 
-COPY build /build
 RUN mkdir -p /output/installFiles
 RUN mkdir -p /output/macemuAppImages
 
-FROM buildenv AS BasiliskII
+
+
+FROM buildenv AS buildenv-basilisk2
+ARG SKIP_VHD="n"
+ARG SKIP_BINCUE="n"
+ARG PACKAGING="linuxdeploy"
 
 # compile basiliskII
 WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
@@ -70,8 +93,8 @@ RUN \
 	./configure \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
-	--with-bincue \
-	--with-libvhd \
+	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
+	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \
 	--without-esd \
 	--with-vdeplug \
@@ -90,6 +113,11 @@ WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
 
 RUN cp /build/BasiliskII.desktop ./AppDir/
+RUN [ "$PACKAGING" != "tarball" ] || ( \
+	mkdir -p AppDir/usr/lib && \
+	cp /build/AppRun.sh AppDir/ && \
+	chmod a+x AppDir/AppRun.sh \
+	)
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 RUN gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskII.ico ./BasiliskII.png && \
 	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskIIGUI.ico ./BasiliskIIGUI.png
@@ -97,20 +125,29 @@ RUN cp ./BasiliskII.png /output/installFiles/ && \
 	cp ./BasiliskIIGUI.png /output/installFiles/ && \
 	cp /build/BasiliskII.desktop /output/installFiles/ && \
 	cp /build/BasiliskIIGUI.desktop /output/installFiles/
-RUN linuxdeploy \
+RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 		--appdir AppDir \
 		--custom-apprun /build/AppRun.sh \
 		--executable ./BasiliskII \
-		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libgdk_pixbuf-2.0.so.0 \
 		--desktop-file=/build/BasiliskII.desktop \
 		--icon-file=BasiliskII.png \
 		--output appimage 2>&1 | tee /tmp/linuxdeploy-BasiliskII
-RUN mv BasiliskII-*.AppImage BasiliskII.AppImage && cp ./*.AppImage /output/macemuAppImages/
+RUN [ "$PACKAGING" != "linuxdeploy" ] || (echo "Packaging with linuxdeploy" && mv BasiliskII-*.AppImage BasiliskII.AppImage && cp ./*.AppImage /output/macemuAppImages/)
+RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/BasiliskII.AppDir.tar.gz AppDir)
+COPY --from=buildenv /build/helpers/Install /output/
+COPY --from=buildenv /build/helpers/BasiliskII /output/
+COPY --from=buildenv /build/helpers/BasiliskIIGUI /output/
 
-FROM buildenv AS SheepShaver
+
+
+FROM buildenv AS buildenv-sheepshaver
+ARG SKIP_VHD="n"
+ARG SKIP_BINCUE="n"
+ARG PACKAGING="linuxdeploy"
 
 # compile SheepShaver
 WORKDIR /usr/local/src/macemu/SheepShaver
@@ -121,11 +158,10 @@ RUN  \
 	./configure \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
-	--with-bincue \
-	--with-libvhd \
+	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
+	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \
 	--without-esd \
-	--with-vdeplug \
 	;
 
 #	--enable-standalone-gui \ # combining the standalone gui with bincue breaks the build
@@ -138,6 +174,11 @@ WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
 RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
 
 RUN cp /build/SheepShaver.desktop ./AppDir/
+RUN [ "$PACKAGING" != "tarball" ] || ( \
+	mkdir -p AppDir/usr/lib && \
+	cp /build/AppRun.sh AppDir/ && \
+	chmod a+x AppDir/AppRun.sh \
+	)
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 RUN gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaver.ico ./SheepShaver.png && \
 	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaverGUI.ico ./SheepShaverGUI.png
@@ -145,26 +186,42 @@ RUN cp ./SheepShaver.png /output/installFiles/ && \
 	cp ./SheepShaverGUI.png /output/installFiles/ && \
 	cp /build/SheepShaver.desktop /output/installFiles/ && \
 	cp /build/SheepShaverGUI.desktop /output/installFiles/
-RUN linuxdeploy \
+RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 		--appdir AppDir \
 		--custom-apprun /build/AppRun.sh \
 		--executable ./SheepShaver \
-		--library /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 \
-		--library /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
+		--library /usr/lib/$(</ARCHDIR)libgdk_pixbuf-2.0.so.0 \
 		--desktop-file=/build/SheepShaver.desktop \
 		--icon-file=SheepShaver.png \
 		--output appimage 2>&1 | tee /tmp/linuxdeploy-SheepShaver
-RUN mv SheepShaver-*.AppImage SheepShaver.AppImage && cp ./*.AppImage /output/macemuAppImages/
+RUN [ "$PACKAGING" != "linuxdeploy" ] || (echo "Packaging with linuxdeploy" && mv SheepShaver-*.AppImage SheepShaver.AppImage && cp ./*.AppImage /output/macemuAppImages/)
+RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/SheepShaver.AppDir.tar.gz AppDir)
+COPY --from=buildenv /build/helpers/Install /output/
+COPY --from=buildenv /build/helpers/SheepShaver /output/
+COPY --from=buildenv /build/helpers/SheepShaverGUI /output/
+COPY --from=buildenv /build/helpers/SheepShaverMmap /output/
 
-FROM buildenv AS final
 
-COPY --from=BasiliskII /output /output
-COPY --from=SheepShaver /output /output
-# rename output files to be more readable, add helpers
-RUN cp /build/helpers/* /output/
 
+FROM buildenv AS merge
+# merge outputs from builds
+
+COPY --from=buildenv-sheepshaver /output /output
+COPY --from=buildenv-basilisk2 /output /output
 WORKDIR /usr/local/src/macemu
 
-CMD [ "/bin/bash", "-c", "echo -n '.'; rm -rf /externalOutput/*; echo -n '.'; cp -ax /output/* /externalOutput/" ]
+# stripped down outputs
+FROM scratch AS basilisk2
+COPY --from=buildenv-basilisk2 /output /
+
+FROM scratch AS sheepshaver
+COPY --from=buildenv-sheepshaver /output /
+
+FROM scratch AS final
+# reduce to final output
+COPY --from=buildenv-sheepshaver /output /
+COPY --from=buildenv-basilisk2 /output /
+

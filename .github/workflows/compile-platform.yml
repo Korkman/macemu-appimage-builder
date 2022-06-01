@@ -1,15 +1,21 @@
 name: Compile amd64
 
-inputs:
-  platform:
-    description: "Target platform, e.g. amd64 or i386"
-    required: true
-    default: "amd64"
-
 # Controls when the workflow will run
 on:
   workflow_dispatch: # Allows run manually from the Actions tab
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
   workflow_call: # Allow reuse of this workflow
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

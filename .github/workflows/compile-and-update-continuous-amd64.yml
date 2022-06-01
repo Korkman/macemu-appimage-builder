@@ -12,6 +12,7 @@ jobs:
       platform: amd64
       target_stage: combined
   update_release:
+    needs: compile
     uses: ./.github/workflows/update-continuous-release.yml
     with:
       platform: amd64

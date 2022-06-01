@@ -1,0 +1,72 @@
+# Update the "continuous release"
+
+name: Update continuous release
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch: # Allows run manually from the Actions tab
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
+      target_stage:
+        description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
+        required: true
+        default: "combined"
+        type: string
+  workflow_call: # Allow reuse of this workflow
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
+      target_stage:
+        description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
+        required: true
+        default: "combined"
+        type: string
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # job name
+  update:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          #github_token: ${{secrets.GITHUB_TOKEN}}
+          # Required, workflow file name or ID
+          workflow: compile-platform.yml
+          branch: main
+          # artifact name downloaded
+          name: macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}
+          # Optional, choose to skip unpacking the downloaded artifact(s)
+          # default false
+          #skip_unpack: true
+          workflow_conclusion: [ "success", "in_progress ]
+          
+      - name: List files for the log
+        run: ls -al
+      
+      # create a release
+      - uses: "ncipollo/release-action@v1"
+        with:
+          tag: "continuous"
+          #token: "${{ secrets.GITHUB_TOKEN }}"
+          name: "Continuous release"
+          prerelease: true
+          draft: false
+          #generateReleaseNotes: false
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true
+          artifacts: "macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz"
+          artifactContentType: application/gzip
+  

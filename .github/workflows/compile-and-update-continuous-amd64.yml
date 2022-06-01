@@ -1,4 +1,4 @@
-name: amd64
+name: Compile and update continuous amd64
 
 # Controls when the workflow will run
 on:

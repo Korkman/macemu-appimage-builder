@@ -1,0 +1,33 @@
+name: Manual update continuous release
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
+      target_stage:
+        description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
+        required: true
+        default: "combined"
+        type: string
+      workflow_file:
+        description: "Name of the artifact producing workflow file"
+        required: true
+        default: "compile-platform.yml"
+        type: string
+      workflow_conclusion:
+        description: "State of the artifact producing workflow (success or in_progress)"
+        required: true
+        default: "success"
+        type: string
+jobs:
+  update_release:
+    uses: ./.github/workflows/update-continuous-release.yml
+    with:
+      platform: ${{ github.event.inputs.platform }}
+      target_stage: ${{ github.event.inputs.target_stage }}
+      workflow_file: ${{ github.event.inputs.workflow_file }}
+      workflow_conclusion: ${{ github.event.inputs.workflow_conclusion }}

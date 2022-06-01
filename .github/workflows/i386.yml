@@ -18,5 +18,4 @@ jobs:
       platform: i386
       target_stage: combined
       workflow_file: i386.yml
-      workflow_conclusion: in_progress
     

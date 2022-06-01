@@ -1,0 +1,21 @@
+name: Manual compile platform
+on:
+  workflow_dispatch: # Allows run manually from the Actions tab
+    inputs:
+      platform:
+        description: "Target platform, e.g. amd64 or i386"
+        required: true
+        default: "amd64"
+        type: string
+      target_stage:
+        description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
+        required: true
+        default: "combined"
+        type: string
+jobs:
+  compile:
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: amd64
+      target_stage: combined
+      

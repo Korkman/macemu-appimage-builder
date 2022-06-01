@@ -16,6 +16,11 @@ on:
         required: true
         default: "combined"
         type: string
+      workflow_conclusion:
+        description: "State of the workflow (success or in_progress)"
+        required: true
+        default: "success"
+        type: string
   workflow_call: # Allow reuse of this workflow
     inputs:
       platform:
@@ -27,6 +32,11 @@ on:
         description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
         required: true
         default: "combined"
+        type: string
+      workflow_conclusion:
+        description: "State of the workflow (success or in_progress)"
+        required: true
+        default: "success"
         type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -51,7 +61,7 @@ jobs:
           # Optional, choose to skip unpacking the downloaded artifact(s)
           # default false
           #skip_unpack: true
-          workflow_conclusion: [ "success", "in_progress ]
+          workflow_conclusion: ${{ github.event.inputs.workflow_conclusion }}
           
       - name: List files for the log
         run: ls -al

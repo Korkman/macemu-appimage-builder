@@ -6,16 +6,16 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  compile:
-    uses: ./.github/workflows/compile-platform.yml
-    with:
-      platform: amd64
-      target_stage: nothing
-  update_release:
-    needs: compile
-    uses: ./.github/workflows/update-continuous-release.yml
-    with:
-      platform: amd64
-      target_stage: nothing
-      workflow_file: nothing.yml
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/compile-platform.yml
+      with:
+        platform: amd64
+        target_stage: nothing
+    - uses: ./.github/workflows/update-continuous-release.yml
+      with:
+        platform: amd64
+        target_stage: nothing
+        workflow_file: nothing.yml
     

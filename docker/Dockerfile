@@ -225,3 +225,6 @@ FROM scratch AS combined
 COPY --from=buildenv-sheepshaver /output /
 COPY --from=buildenv-basilisk2 /output /
 
+FROM scratch AS nothing
+# dummy target to test gh actions
+COPY build/helpers /

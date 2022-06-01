@@ -16,6 +16,6 @@ jobs:
   compile:
     uses: ./.github/workflows/compile-platform.yml
     with:
-      platform: amd64
-      target_stage: combined
+      platform: ${{ github.event.inputs.platform }}
+      target_stage: ${{ github.event.inputs.target_stage }}
       

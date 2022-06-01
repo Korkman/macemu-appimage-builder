@@ -50,7 +50,7 @@ jobs:
           # default false
           #skip_unpack: true
           workflow_conclusion: ${{ inputs.workflow_conclusion }}
-          check_artifacts: true
+          search_artifacts: true
           
       - name: List files for the log
         run: ls -al

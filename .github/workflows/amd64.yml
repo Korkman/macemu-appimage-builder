@@ -17,6 +17,6 @@ jobs:
     with:
       platform: amd64
       target_stage: combined
-      workflow_file: compile-and-update-continuous-amd64.yml
+      workflow_file: amd64.yml
       workflow_conclusion: in_progress
     

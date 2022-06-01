@@ -21,11 +21,6 @@ on:
         required: true
         default: "compile-platform.yml"
         type: string
-      workflow_conclusion:
-        description: "State of the artifact producing workflow (success or in_progress)"
-        required: true
-        default: "success"
-        type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

@@ -18,11 +18,6 @@ on:
         required: true
         default: "compile-platform.yml"
         type: string
-      workflow_conclusion:
-        description: "State of the artifact producing workflow (success or in_progress)"
-        required: true
-        default: "success"
-        type: string
 jobs:
   update_release:
     uses: ./.github/workflows/update-continuous-release.yml
@@ -30,4 +25,3 @@ jobs:
       platform: ${{ github.event.inputs.platform }}
       target_stage: ${{ github.event.inputs.target_stage }}
       workflow_file: ${{ github.event.inputs.workflow_file }}
-      workflow_conclusion: ${{ github.event.inputs.workflow_conclusion }}

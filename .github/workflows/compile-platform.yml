@@ -46,10 +46,10 @@ jobs:
         run: mv output macemu
       
       - name: Create tar.gz
-        run: tar -czvf build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz macemu
+        run: tar -czvf macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz macemu
       
       # save artifacts
       - uses: actions/upload-artifact@v3
         with:
-          name: build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}
-          path: build-result-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz
+          name: macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}
+          path: macemu-${{ github.event.inputs.platform }}-${{ github.event.inputs.target_stage }}.tar.gz

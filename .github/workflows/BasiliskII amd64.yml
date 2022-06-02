@@ -1,4 +1,4 @@
-name: amd64
+name: BasiliskII amd64
 
 # Controls when the workflow will run
 on:
@@ -10,5 +10,5 @@ jobs:
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: amd64
-      target_stage: combined
+      target_stage: basilisk2
     

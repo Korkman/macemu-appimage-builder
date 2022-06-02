@@ -25,28 +25,49 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
       
       - name: Compile
         run: sudo ./compile ${{ inputs.platform }} ${{ inputs.target_stage }}
       
       - name: Make nice directory name
         run: mv output macemu
-      
+        
       - name: Create tar.gz
         run: tar -czvf macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz macemu
       
-      # save artifacts
-      - uses: actions/upload-artifact@v3
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
         with:
           name: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz
           
+      - name: Move continuous tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}          
+          script: |
+            try {
+                await github.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: "tags/continuous"
+                })
+            } catch (e) {
+              console.log("Tag 'continuous' does not exist yet? Error: " + e)
+            }
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/continuous",
+              sha: context.sha
+            })
+      
       # add to continuous release
       - uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
-          commit: "main"
           name: "Continuous release"
           prerelease: false
           draft: false

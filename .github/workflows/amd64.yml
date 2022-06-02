@@ -6,16 +6,9 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  compile:
+  compile-and-release:
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: amd64
       target_stage: combined
-  update_release:
-    needs: compile
-    uses: ./.github/workflows/update-continuous-release.yml
-    with:
-      platform: amd64
-      target_stage: combined
-      workflow_file: amd64.yml
     

@@ -5,10 +5,9 @@ run instantly on many Linux desktops.
 
 Download the [latest build](https://github.com/Korkman/macemu-appimage-builder/releases/latest)
 
-[![Compile and release](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/compile-and-release.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/compile-and-release.yml)
+[![BasiliskII amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml) [![SheepShaver amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
 
 ## Download contents
-
 ```
 BasiliskII       - launcher for the 68k emulator
 BasiliskIIGUI    - launcher for the 68k emulator GUI

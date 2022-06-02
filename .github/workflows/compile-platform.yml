@@ -47,7 +47,7 @@ jobs:
         with:
           tag: "continuous"
           name: "Continuous release"
-          prerelease: true
+          prerelease: false
           draft: false
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true

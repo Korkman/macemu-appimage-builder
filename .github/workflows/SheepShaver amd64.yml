@@ -3,6 +3,7 @@ name: SheepShaver amd64
 # Controls when the workflow will run
 on:
   workflow_dispatch:
+  workflow_call:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

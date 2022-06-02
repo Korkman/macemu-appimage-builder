@@ -88,7 +88,7 @@ Once you are satisfied with your build you can purge the created Docker images t
 disk space with
 
 ```
-sudo docker rmi $(docker images -q macemu-build)
+sudo docker rmi $(sudo docker images -q macemu-build)
 sudo docker system prune
 ```
 (the latter is a generic command to delete all unused

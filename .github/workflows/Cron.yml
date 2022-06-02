@@ -13,13 +13,25 @@ jobs:
   # trigger workflows
   basilisk2_amd64:
     name: "BasiliskII amd64"
-    uses: "./.github/workflows/BasiliskII amd64.yml"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: amd64
+      target_stage: basilisk2
   basilisk2_i386:
     name: "BasiliskII i386"
-    uses: "./.github/workflows/BasiliskII i386.yml"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: i386
+      target_stage: basilisk2
   sheepshaver_amd64:
     name: "SheepShaver amd64"
-    uses: "./.github/workflows/SheepShaver amd64.yml"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: amd64
+      target_stage: sheepshaver
   sheepshaver_i386:
     name: "SheepShaver i386"
-    uses: "./.github/workflows/SheepShaver i386.yml"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: i386
+      target_stage: sheepshaver

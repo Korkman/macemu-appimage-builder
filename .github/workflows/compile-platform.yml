@@ -46,6 +46,7 @@ jobs:
       - uses: "ncipollo/release-action@v1"
         with:
           #tag: "continuous"
+          commit: "main"
           name: "Continuous release"
           prerelease: false
           draft: false

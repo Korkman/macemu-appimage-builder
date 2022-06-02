@@ -1,6 +1,6 @@
 # macemu-appimage-builder
 Builds the popular classic Macintosh emulators BasiliskII and SheepShaver
-from source for 32-bit and 64-bit x86 Linux and creates AppImages which
+from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit and 64-bit x86 Linux and creates AppImages which
 run instantly on many Linux desktops.
 
 Download the [latest build](https://github.com/Korkman/macemu-appimage-builder/releases/latest)

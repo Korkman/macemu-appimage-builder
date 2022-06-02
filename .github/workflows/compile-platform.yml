@@ -41,3 +41,15 @@ jobs:
         with:
           name: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz
+          
+      # add to continuous release
+      - uses: "ncipollo/release-action@v1"
+        with:
+          tag: "continuous"
+          name: "Continuous release"
+          prerelease: true
+          draft: false
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true
+          artifacts: "macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz"
+          artifactContentType: application/gzip

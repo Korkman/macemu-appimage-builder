@@ -9,11 +9,14 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      
       - name: compile
         uses: ./.github/workflows/compile-platform.yml
         with:
           platform: amd64
           target_stage: nothing
+          
       - name: release
         uses: ./.github/workflows/update-continuous-release.yml
         with:

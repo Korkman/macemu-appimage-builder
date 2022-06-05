@@ -95,8 +95,6 @@
 	mkdir -p ./output
 	rm -rf ./output/*
 	
-	# DOCKER_BUILDKIT=1 currently required for custom --output
-	
 	touch ./compile.log
 	# convenience: chown logs to the sudo caller
 	if [ "${SUDO_USER:-}" != "" ]
@@ -110,7 +108,8 @@
 		echo "Debugging stage $TARGET"
 		sleep 2
 		
-		DOCKER_BUILDKIT=1 docker build \
+		build_status=0
+		docker build \
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \
 			--build-arg SKIP_VHD=$SKIP_VHD \
@@ -123,19 +122,36 @@
 			--target $TARGET \
 			docker \
 			2>&1 | tee compile.log \
-		;
-		docker run --rm -it \
-			--platform $DOCKER_PLATFORM \
-			-v "$(realpath ./):/compiledir" \
-			macemu-build:$TARGET-$DOCKER_SUFFIX \
-			/bin/bash \
-		;
+		|| build_status=$?
+		if [ "$build_status" = "0" ]
+		then
+			# image successfully created, start shell based on tag
+			docker run --rm -it \
+				--platform $DOCKER_PLATFORM \
+				-v "$(realpath ./):/compiledir" \
+				macemu-build:$TARGET-$DOCKER_SUFFIX \
+				/bin/bash \
+			;
+		else
+			# build failed, start shell based on last intermediate image
+			last_intermediate=$(tac compile.log | grep -E " ---> [0-9a-f]{12}" | head -n1 | sed "s/ ---> //")
+			if [ "$last_intermediate" != "" ]
+			then
+				docker run --rm -it \
+					--platform $DOCKER_PLATFORM \
+					-v "$(realpath ./):/compiledir" \
+					sha256:$last_intermediate \
+					/bin/bash \
+				;
+			fi
+		fi
 		exit
 	else
 		TARGET="${2:-combined}"
 		echo "Building stage $TARGET (packaging: $PACKAGING)"
 		sleep 2
 		
+		# DOCKER_BUILDKIT=1 currently required for custom --output
 		DOCKER_BUILDKIT=1 docker build \
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \

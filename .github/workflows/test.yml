@@ -23,12 +23,24 @@ jobs:
       - run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-amd64-basilisk.AppImage || true
       
       - uses: "ncipollo/release-action@v1"
+        if: hashFiles('macemu-amd64-sheepshaver.AppImage') != ''
         with:
           tag: "continuous"
           name: "Continuous release"
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-amd64-sheepshaver.AppImage,macemu-amd64-basilisk2.AppImage"
+          artifacts: "macemu-amd64-sheepshaver.AppImage"
+          artifactContentType: application/vnd.appimage
+          
+      - uses: "ncipollo/release-action@v1"
+        if: hashFiles('macemu-amd64-basilisk2.AppImage') != ''
+        with:
+          tag: "continuous"
+          name: "Continuous release"
+          prerelease: false
+          draft: false
+          allowUpdates: true
+          artifacts: "macemu-amd64-basilisk2.AppImage"
           artifactContentType: application/vnd.appimage
           

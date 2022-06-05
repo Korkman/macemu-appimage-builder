@@ -21,15 +21,21 @@ jobs:
       
       # add AppImage direct downloads
       - name: Rename SheepShaver.AppImage for platform (if present)
-        if: hashFiles('macemu/macemuAppImages/SheepShaver.AppImage') != ''
-        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage
+        id: sheepshaver_appimage
+        run: |
+          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
+          echo "::set-output name=exists::yes" || \
+          echo "::set-output name=exists::no"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
-        if: hashFiles('macemu/macemuAppImages/BasiliskII.AppImage') != ''
-        run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage
+        id: basilisk2_appimage
+        run: |
+          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
+          echo "::set-output name=exists::yes" || \
+          echo "::set-output name=exists::no"
       
       - name: Upload SheepShaver AppImage direct asset to continuous release (if present)
-        if: hashFiles('macemu-${{ inputs.platform }}-SheepShaver.AppImage') != ''
+        if: steps.sheepshaver_appimage.outputs.exists == 'yes'
         uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
@@ -41,7 +47,7 @@ jobs:
           artifactContentType: application/vnd.appimage
           
       - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
-        if: hashFiles('macemu-${{ inputs.platform }}-BasiliskII.AppImage') != ''
+        if: steps.basilisk2_appimage.outputs.exists == 'yes'
         uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"

@@ -54,3 +54,17 @@ jobs:
           allowUpdates: true
           artifacts: "macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz"
           artifactContentType: application/gzip
+      
+      # add AppImage direct downloads
+      - run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage
+      - run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage
+      
+      - uses: "ncipollo/release-action@v1"
+        with:
+          tag: "continuous"
+          name: "Continuous release"
+          prerelease: false
+          draft: false
+          allowUpdates: true
+          artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage,macemu-${{ inputs.platform }}-basilisk2.AppImage"
+          artifactContentType: application/vnd.appimage

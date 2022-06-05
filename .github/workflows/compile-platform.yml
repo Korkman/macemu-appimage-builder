@@ -44,7 +44,8 @@ jobs:
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz
                 
       # add to continuous release
-      - uses: "ncipollo/release-action@v1"
+      - name: Upload .tar.gz asset to continuous release
+        uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
           name: "Continuous release"
@@ -56,10 +57,13 @@ jobs:
           artifactContentType: application/gzip
       
       # add AppImage direct downloads
-      - run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage
-      - run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage
+      - name: Rename SheepShaver.AppImage for platform (if present)
+        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage || true
+      - name: Rename BasiliskII.AppImage for platform (if present)
+        run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage || true
       
-      - uses: "ncipollo/release-action@v1"
+      - name: Upload AppImage direct asset to continuous release
+        uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
           name: "Continuous release"

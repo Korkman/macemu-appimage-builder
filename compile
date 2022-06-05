@@ -36,8 +36,7 @@
 			echo "Building amd64"
 			DOCKER_SUFFIX="amd64"
 			DOCKER_PLATFORM="linux/x86-64"
-			DISTRO="debian:buster"
-			#DISTRO="ubuntu:focal"
+			DISTRO="ubuntu:bionic"
 			SKIP_VHD="n"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="x86_64"
@@ -46,7 +45,7 @@
 			echo "Building ${PLATFORM}"
 			DOCKER_SUFFIX="i386"
 			DOCKER_PLATFORM="linux/386"
-			DISTRO="debian:buster"
+			DISTRO="ubuntu:bionic"
 			SKIP_VHD="y"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="i386"
@@ -57,7 +56,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi1"
 			DOCKER_PLATFORM="linux/arm/v5"
-			DISTRO="balenalib/raspberry-pi-debian:buster-build"
+			DISTRO="balenalib/raspberry-pi-ubuntu:bionic-build"
 		;;
 		"pi2")
 			echo "Building Raspberry ${PLATFORM} [EXPERIMENTAL]"
@@ -65,7 +64,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi2"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberry-pi2-debian:buster-build"
+			DISTRO="balenalib/raspberry-pi2-ubuntu:bionic-build"
 			#DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
 		;;
 		"pi3"|"pi4"|"pi0v2")
@@ -74,7 +73,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi3"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberrypi3-debian:buster-build"
+			DISTRO="balenalib/raspberrypi3-ubuntu:bionic-build"
 		;;
 		"pi4-64")
 			echo "Building Rasperry ${PLATFORM} (raspberrypi4 64-bit) [EXPERIMENTAL]"
@@ -82,7 +81,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi4-64"
 			DOCKER_PLATFORM="linux/arm64"
-			DISTRO="balenalib/raspberrypi4-64-debian:buster-build"
+			DISTRO="balenalib/raspberrypi4-64-ubuntu:bionic-build"
 			#DISTRO="debian:bullseye"
 			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
 		;;

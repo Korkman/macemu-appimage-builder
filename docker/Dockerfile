@@ -17,8 +17,6 @@ RUN apt-get -y --no-install-recommends install \
 	iasl libncurses5-dev \
 	wget libaio-dev libyajl-dev \
 	libfdt-dev \
-	# to convert .ico files \
-	graphicsmagick \
 	# required for prefs editor (not pulled otherwise in debian:buster) \
 	gvfs libgail-common libatk-adaptor \
 	# include gtk gail and theme engines \
@@ -102,6 +100,13 @@ RUN apt-get -y --no-install-recommends install libsdl2-dev
 #RUN make -j $(nproc)
 #RUN make install
 
+# download appdir-lint.sh & deps
+WORKDIR /usr/local/bin
+RUN wget https://github.com/AppImage/pkg2appimage/raw/master/appdir-lint.sh -O appdir-lint.sh && chmod a+x appdir-lint.sh
+RUN wget https://github.com/AppImage/pkg2appimage/raw/master/excludelist -O excludelist
+RUN apt-get -y --no-install-recommends install desktop-file-utils libfile-mimeinfo-perl
+
+
 # download macemu (BasiliskII and SheepShaver source)
 WORKDIR /usr/local/src
 
@@ -149,27 +154,26 @@ RUN make install DESTDIR=AppDir
 
 # package BasiliskII
 
-# copy theme files to AppDirs
 WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
-RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
 
-RUN cp /build/BasiliskII.desktop ./AppDir/
 RUN [ "$PACKAGING" != "tarball" ] || ( \
 	mkdir -p AppDir/usr/lib && \
 	cp /build/AppRun.sh AppDir/ && \
 	chmod a+x AppDir/AppRun.sh \
 )
-RUN gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskII.ico ./BasiliskII.png && \
-	gm convert /usr/local/src/macemu/BasiliskII/src/Windows/BasiliskIIGUI.ico ./BasiliskIIGUI.png
-RUN cp ./BasiliskII.png /output/installFiles/ && \
-	cp ./BasiliskIIGUI.png /output/installFiles/ && \
+RUN cp /build/BasiliskII.png /output/installFiles/ && \
+	cp /build/BasiliskIIGUI.png /output/installFiles/ && \
 	cp /build/BasiliskII.desktop /output/installFiles/ && \
-	cp /build/BasiliskIIGUI.desktop /output/installFiles/ \
+	cp /build/BasiliskIIGUI.desktop /output/installFiles/ && \
+	cp /build/helpers/Install /output/ && \
+	cp /build/helpers/BasiliskII /output/ && \
+	cp /build/helpers/BasiliskIIGUI /output/ \
 ;
-
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
+	--desktop-file=/build/BasiliskII.desktop \
+	--icon-file=/build/BasiliskII.png \
 	--custom-apprun /build/AppRun.sh \
 	--executable ./BasiliskII \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
@@ -179,16 +183,19 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \
 	--library /usr/lib/$(</ARCHDIR)gvfs/libgvfscommon.so \
-	--desktop-file=/build/BasiliskII.desktop \
-	--icon-file=BasiliskII.png \
 	--output appimage \
 	2>&1 | tee /tmp/linuxdeploy-BasiliskII \
 ;
-RUN [ "$PACKAGING" != "linuxdeploy" ] || (echo "Packaging with linuxdeploy" && mv BasiliskII-*.AppImage BasiliskII.AppImage && cp ./*.AppImage /output/macemuAppImages/)
+# simplify name, copy and lint
+RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
+	echo "Packaging with linuxdeploy" && \
+	mv BasiliskII-*.AppImage BasiliskII.AppImage && \
+	cp ./*.AppImage /output/macemuAppImages/ && \
+	./BasiliskII.AppImage --appimage-extract > /dev/null && \
+	appdir-lint.sh squashfs-root && \
+	rm -rf squashfs-root \
+)
 RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/BasiliskII.AppDir.tar.gz AppDir)
-COPY --from=buildenv /build/helpers/Install /output/
-COPY --from=buildenv /build/helpers/BasiliskII /output/
-COPY --from=buildenv /build/helpers/BasiliskIIGUI /output/
 
 
 
@@ -198,6 +205,7 @@ ARG SKIP_BINCUE="n"
 ARG PACKAGING="linuxdeploy"
 
 # compile SheepShaver
+
 WORKDIR /usr/local/src/macemu/SheepShaver
 RUN make links
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
@@ -220,27 +228,27 @@ RUN make install DESTDIR=AppDir
 
 # package SheepShaver
 
-# copy theme files to AppDirs
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
-RUN mkdir -p AppDir/usr/share/themes/ && cp -r /usr/share/themes AppDir/usr/share/
 
-RUN cp /build/SheepShaver.desktop ./AppDir/
 RUN [ "$PACKAGING" != "tarball" ] || ( \
 	mkdir -p AppDir/usr/lib && \
 	cp /build/AppRun.sh AppDir/ && \
 	chmod a+x AppDir/AppRun.sh \
 )
-RUN gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaver.ico ./SheepShaver.png && \
-	gm convert /usr/local/src/macemu/SheepShaver/src/Windows/SheepShaverGUI.ico ./SheepShaverGUI.png
-RUN cp ./SheepShaver.png /output/installFiles/ && \
-	cp ./SheepShaverGUI.png /output/installFiles/ && \
+RUN cp /build/SheepShaver.png /output/installFiles/ && \
+	cp /build/SheepShaverGUI.png /output/installFiles/ && \
 	cp /build/SheepShaver.desktop /output/installFiles/ && \
-	cp /build/SheepShaverGUI.desktop /output/installFiles/ \
+	cp /build/SheepShaverGUI.desktop /output/installFiles/ && \
+	cp /build/helpers/Install /output/ && \
+	cp /build/helpers/SheepShaver /output/ && \
+	cp /build/helpers/SheepShaverGUI /output/ && \
+	cp /build/helpers/SheepShaverMmap /output/ \
 ;
-
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
+	--desktop-file=/build/SheepShaver.desktop \
+	--icon-file=/build/SheepShaver.png \
 	--custom-apprun /build/AppRun.sh \
 	--executable ./SheepShaver \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
@@ -250,18 +258,19 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \
 	--library /usr/lib/$(</ARCHDIR)gvfs/libgvfscommon.so \
-	--desktop-file=/build/SheepShaver.desktop \
-	--icon-file=SheepShaver.png \
 	--output appimage \
 	2>&1 | tee /tmp/linuxdeploy-SheepShaver \
 ;
-RUN [ "$PACKAGING" != "linuxdeploy" ] || (echo "Packaging with linuxdeploy" && mv SheepShaver-*.AppImage SheepShaver.AppImage && cp ./*.AppImage /output/macemuAppImages/)
+# simplify name, copy and lint
+RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
+	echo "Packaging with linuxdeploy" && \
+	mv SheepShaver-*.AppImage SheepShaver.AppImage && \
+	cp ./*.AppImage /output/macemuAppImages/ && \
+	./SheepShaver.AppImage --appimage-extract > /dev/null && \
+	appdir-lint.sh squashfs-root && \
+	rm -rf squashfs-root \
+)
 RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/SheepShaver.AppDir.tar.gz AppDir)
-COPY --from=buildenv /build/helpers/Install /output/
-COPY --from=buildenv /build/helpers/SheepShaver /output/
-COPY --from=buildenv /build/helpers/SheepShaverGUI /output/
-COPY --from=buildenv /build/helpers/SheepShaverMmap /output/
-
 
 
 FROM buildenv AS merge

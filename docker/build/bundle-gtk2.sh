@@ -78,3 +78,9 @@ echo "========= copy the GIO modules ========="
 mkdir -p "$APPDIR/usr/lib/gio"
 GIO_MODULEDIR=$(pkg-config --variable=giomoduledir gio-2.0)
 cp -a "${GIO_MODULEDIR}" "$APPDIR/usr/lib/gio"
+
+
+echo ""
+echo "========= copy themes ========="
+mkdir -p "$APPDIR/usr/share/"
+cp -r /usr/share/themes "$APPDIR/usr/share/"

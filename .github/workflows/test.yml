@@ -24,7 +24,6 @@ jobs:
           name: "Continuous release"
           prerelease: false
           draft: false
-          bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
           artifacts: "macemu-amd64-sheepshaver.AppImage"
           artifactContentType: application/vnd.appimage

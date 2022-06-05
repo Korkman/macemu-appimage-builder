@@ -1,2 +1,4 @@
 output/*
 compile.log
+squashfs-root/*
+strace.log

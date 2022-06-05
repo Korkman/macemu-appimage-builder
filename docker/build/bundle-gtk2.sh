@@ -71,3 +71,10 @@ if [[ ! -z $pqm ]]; then
   version="$(pango-querymodules --version | tail -n 1 | tr -d " " | cut -d':' -f 2)"
   cat "/${PREFIX}/lib/pango/${version}/modules.cache" | sed "s|/${PREFIX}/lib/pango/${version}/modules/||g" > "$APPDIR/usr/lib/pango/${version}/modules.cache"
 fi
+
+
+echo ""
+echo "========= copy the GIO modules ========="
+mkdir -p "$APPDIR/usr/lib/gio"
+GIO_MODULEDIR=$(pkg-config --variable=giomoduledir gio-2.0)
+cp -a "${GIO_MODULEDIR}" "$APPDIR/usr/lib/gio"

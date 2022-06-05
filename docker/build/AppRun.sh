@@ -34,7 +34,8 @@
     done
 
     # new series of environment overrides to bundle GTK
-    if [ "${APP_GTK_THEME:-}" != "" ]
+    APP_GTK_THEME="${APP_GTK_THEME:-yes}"
+    if [ "${APP_GTK_THEME}" != "no" ]
     then
         if [ "${APP_GTK_THEME}" = "yes" ]; then APP_GTK_THEME="Clearlooks"; fi
         export GTK_DATA_PREFIX="${HERE}"
@@ -50,8 +51,9 @@
     export GTK_IM_MODULE_FILE="$APPDIR/usr/lib/gtk-2.0:$GTK_PATH"
     #export PANGO_LIBDIR="$APPDIR/usr/lib"
     #echo "PANGO_LIBDIR=${PANGO_LIBDIR}"
-
+    export GIO_MODULE_DIR="${HERE}/usr/lib/gio/modules"
 
     EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
-    exec "${EXEC}" "$@"
+    # add sdlrender software as a more conservative default (fixes crashes on Fedora 36)
+    exec "${EXEC}" --sdlrender software "$@"
 }

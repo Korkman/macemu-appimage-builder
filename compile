@@ -20,7 +20,7 @@
 	# must be root to control docker
 	if [ "$USER" != "root" ]
 	then
-		sudo "$0" $@
+		sudo -E "$0" $@
 		exit
 	fi
 	
@@ -29,13 +29,15 @@
 	PACKAGING="none"
 	SKIP_VHD="y"
 	SKIP_BINCUE="n"
+	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 	case "${PLATFORM}" in
 		""|"amd64")
 			echo "Building amd64"
 			DOCKER_SUFFIX="amd64"
 			DOCKER_PLATFORM="linux/x86-64"
-			DISTRO="debian:bullseye"
+			DISTRO="debian:buster"
+			#DISTRO="ubuntu:focal"
 			SKIP_VHD="n"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="x86_64"
@@ -44,7 +46,7 @@
 			echo "Building ${PLATFORM}"
 			DOCKER_SUFFIX="i386"
 			DOCKER_PLATFORM="linux/386"
-			DISTRO="debian:bullseye"
+			DISTRO="debian:buster"
 			SKIP_VHD="y"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="i386"
@@ -55,7 +57,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi1"
 			DOCKER_PLATFORM="linux/arm/v5"
-			DISTRO="balenalib/raspberry-pi-debian:bullseye-build"
+			DISTRO="balenalib/raspberry-pi-debian:buster-build"
 		;;
 		"pi2")
 			echo "Building Raspberry ${PLATFORM} [EXPERIMENTAL]"
@@ -63,7 +65,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi2"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberry-pi2-debian:bullseye-build"
+			DISTRO="balenalib/raspberry-pi2-debian:buster-build"
 			#DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
 		;;
 		"pi3"|"pi4"|"pi0v2")
@@ -72,7 +74,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi3"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberrypi3-debian:bullseye-build"
+			DISTRO="balenalib/raspberrypi3-debian:buster-build"
 		;;
 		"pi4-64")
 			echo "Building Rasperry ${PLATFORM} (raspberrypi4 64-bit) [EXPERIMENTAL]"
@@ -80,7 +82,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi4-64"
 			DOCKER_PLATFORM="linux/arm64"
-			DISTRO="balenalib/raspberrypi4-64-debian:bullseye-build"
+			DISTRO="balenalib/raspberrypi4-64-debian:buster-build"
 			#DISTRO="debian:bullseye"
 			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
 		;;
@@ -116,6 +118,7 @@
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \
 			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \
+			--build-arg "MACEMU_SOURCE=$MACEMU_SOURCE" \
 			--build-arg "MACEMU_GIT_ARGS=$MACEMU_GIT_ARGS" \
 			--tag macemu-build:$TARGET-$DOCKER_SUFFIX \
 			--target $TARGET \
@@ -141,6 +144,7 @@
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \
 			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \
+			--build-arg "MACEMU_SOURCE=$MACEMU_SOURCE" \
 			--build-arg "MACEMU_GIT_ARGS=$MACEMU_GIT_ARGS" \
 			--tag macemu-build:$TARGET-$DOCKER_SUFFIX \
 			--target $TARGET \

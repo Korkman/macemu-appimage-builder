@@ -37,3 +37,12 @@ jobs:
               sha: context.sha
             })
 
+      # add to continuous release
+      - uses: "ncipollo/release-action@v1"
+        with:
+          tag: "continuous"
+          name: "Continuous release"
+          prerelease: false
+          draft: false
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true

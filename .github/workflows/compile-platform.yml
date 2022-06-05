@@ -58,11 +58,21 @@ jobs:
       
       # add AppImage direct downloads
       - name: Rename SheepShaver.AppImage for platform (if present)
-        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage || true
+        id: sheepshaver_appimage
+        run: |
+          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
+          echo "::set-output name=exists::yes" || \
+          echo "::set-output name=exists::no"
+        
       - name: Rename BasiliskII.AppImage for platform (if present)
-        run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage || true
+        id: basilisk2_appimage
+        run: |
+          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
+          echo "::set-output name=exists::yes" || \
+          echo "::set-output name=exists::no"
       
-      - name: Upload AppImage direct asset to continuous release
+      - name: Upload SheepShaver AppImage direct asset to continuous release (if present)
+        if: steps.sheepshaver_appimage.outputs.exists == 'yes'
         uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
@@ -70,5 +80,17 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage,macemu-${{ inputs.platform }}-basilisk2.AppImage"
+          artifacts: "macemu-${{ inputs.platform }}-SheepShaver.AppImage"
+          artifactContentType: application/vnd.appimage
+          
+      - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
+        if: steps.basilisk2_appimage.outputs.exists == 'yes'
+        uses: "ncipollo/release-action@v1"
+        with:
+          tag: "continuous"
+          name: "Continuous release"
+          prerelease: false
+          draft: false
+          allowUpdates: true
+          artifacts: "macemu-${{ inputs.platform }}-BasiliskII.AppImage"
           artifactContentType: application/vnd.appimage

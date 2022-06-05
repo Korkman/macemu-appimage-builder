@@ -16,7 +16,11 @@ jobs:
           file: 'macemu-amd64-sheepshaver.tar.gz'
       
       - run: tar -xzf 'macemu-amd64-sheepshaver.tar.gz'
-      - run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-amd64-sheepshaver.AppImage
+      
+      
+      
+      - run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-amd64-sheepshaver.AppImage || true
+      - run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-amd64-basilisk.AppImage || true
       
       - uses: "ncipollo/release-action@v1"
         with:
@@ -25,6 +29,6 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-amd64-sheepshaver.AppImage"
+          artifacts: "macemu-amd64-sheepshaver.AppImage,macemu-amd64-basilisk2.AppImage"
           artifactContentType: application/vnd.appimage
           

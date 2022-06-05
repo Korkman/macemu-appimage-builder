@@ -60,14 +60,14 @@ jobs:
       - name: Rename SheepShaver.AppImage for platform (if present)
         id: sheepshaver_appimage
         run: |
-          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
+          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         id: basilisk2_appimage
         run: |
-          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
+          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
       
@@ -80,7 +80,7 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-SheepShaver.AppImage"
+          artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage"
           artifactContentType: application/vnd.appimage
           
       - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
@@ -92,5 +92,5 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-BasiliskII.AppImage"
+          artifacts: "macemu-${{ inputs.platform }}-basilisk2.AppImage"
           artifactContentType: application/vnd.appimage

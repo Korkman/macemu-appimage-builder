@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=SheepShaver
-Comment="An open source Power Macintosh Emulator"
+Comment="Open source classic PowerPC Mac OS emulator"
 Icon=SheepShaver
 Exec=SheepShaver
 Terminal=false

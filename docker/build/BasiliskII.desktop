@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=BasiliskII
-Comment="An open source Macintosh II Emulator"
+Comment="Open source classic 68k Mac OS emulator"
 Icon=BasiliskII
 Exec=BasiliskII
 Terminal=false

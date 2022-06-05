@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.korkman.macemu.sheepshaver</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>SheepShaver</name>
+  <summary>Open source classic PowerPC Mac OS emulator</summary>
+
+  <description>
+    <p>
+      SheepShaver is a Mac OS run-time environment that allows you to run classic PowerPC and 68k Mac OS applications (1990s-2000s era). Prerequisites: PowerMac ROM image and a copy of MacOS.
+    </p>
+    <p>Some of SheepShaver's features:</p>
+    <ul>
+      <li>Runs MacOS 7.5.2 thru 9.0.4. MacOS X as a guest is not supported.</li>
+      <li>Color video display</li>
+      <li>CD quality sound output</li>
+      <li>Access to floppy disks, CD-ROMs and HFS(+) partitions on hard disks</li>
+      <li>Easy file exchange with the host OS via a "Host Directory Tree" icon on the Mac desktop</li>
+      <li>Internet and LAN networking via Ethernet</li>
+      <li>Serial drivers SCSI Manager (old-style) emulation</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">com.github.korkman.macemu.sheepshaver.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Prefs editor GUI</caption>
+      <image>https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/screenshots/sheepshaver-prefs-editor.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Emulating MacOS 9</caption>
+      <image>https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/screenshots/sheepshaver-os9.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/Korkman/macemu-appimage-builder</url>
+  <url type="help">https://www.emaculation.com/doku.php/ubuntu</url>
+
+  <provides>
+    <binary>SheepShaver</binary>
+  </provides>
+
+</component>

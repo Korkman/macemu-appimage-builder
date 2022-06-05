@@ -51,8 +51,7 @@ ARG MACEMU_SOURCE="git"
 SHELL [ "/bin/bash", "-c" ]
 # copy only essential files from build directory (improves caching)
 COPY build/detect-archdir.sh /build/
-RUN /build/detect-archdir.sh
-RUN echo "ARCHDIR: $(</ARCHDIR)"
+RUN /build/detect-archdir.sh && echo "ARCHDIR: $(</ARCHDIR)"
 
 # download xen (libvhd source)
 WORKDIR /usr/local/src/xen
@@ -63,10 +62,11 @@ WORKDIR /usr/local/bin
 RUN [ "$PACKAGING" != "linuxdeploy" ] || wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${LXDEPLOY_ARCH}.AppImage -O linuxdeploy
 # extract linuxdeploy to use it without FUSE within build process
 RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
-	chmod a+x linuxdeploy && \
+	chmod a+x ./linuxdeploy && \
 	./linuxdeploy --appimage-extract && \
 	rm ./linuxdeploy && \
-	ln -s /usr/local/bin/squashfs-root/AppRun /usr/local/bin/linuxdeploy \
+	mv squashfs-root linuxdeploy.appdir && \
+	ln -s /usr/local/bin/linuxdeploy.appdir/AppRun /usr/local/bin/linuxdeploy \
 )
 
 # compile libvhd from Xen
@@ -169,7 +169,9 @@ RUN cp /build/BasiliskII.png /output/installFiles/ && \
 	cp /build/BasiliskIIGUI.desktop /output/installFiles/ && \
 	cp /build/helpers/Install /output/ && \
 	cp /build/helpers/BasiliskII /output/ && \
-	cp /build/helpers/BasiliskIIGUI /output/ \
+	cp /build/helpers/BasiliskIIGUI /output/ && \
+	mkdir -p AppDir/usr/share/metainfo && \
+	cp /build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/ \
 ;
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
@@ -243,7 +245,9 @@ RUN cp /build/SheepShaver.png /output/installFiles/ && \
 	cp /build/SheepShaverGUI.desktop /output/installFiles/ && \
 	cp /build/helpers/Install /output/ && \
 	cp /build/helpers/SheepShaver /output/ && \
-	cp /build/helpers/SheepShaverGUI /output/ \
+	cp /build/helpers/SheepShaverGUI /output/ && \
+	mkdir -p AppDir/usr/share/metainfo && \
+	cp /build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/ \
 ;
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/apprun-hook-mmap.sh

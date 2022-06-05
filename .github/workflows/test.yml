@@ -22,7 +22,7 @@ jobs:
       # add AppImage direct downloads
       - name: Rename SheepShaver.AppImage for platform (if present)
         if: hashFiles('macemu/macemuAppImages/SheepShaver.AppImage') != ''
-        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage || true
+        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         if: hashFiles('macemu/macemuAppImages/BasiliskII.AppImage') != ''

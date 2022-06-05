@@ -22,14 +22,14 @@ jobs:
       # add AppImage direct downloads
       - name: Rename SheepShaver.AppImage for platform (if present)
         if: hashFiles('macemu/macemuAppImages/SheepShaver.AppImage') != ''
-        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage
+        run: mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         if: hashFiles('macemu/macemuAppImages/BasiliskII.AppImage') != ''
-        run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage
+        run: mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage
       
       - name: Upload SheepShaver AppImage direct asset to continuous release (if present)
-        if: hashFiles('macemu-${{ inputs.platform }}-sheepshaver.AppImage') != ''
+        if: hashFiles('macemu-${{ inputs.platform }}-SheepShaver.AppImage') != ''
         uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
@@ -37,11 +37,11 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage"
+          artifacts: "macemu-${{ inputs.platform }}-SheepShaver.AppImage"
           artifactContentType: application/vnd.appimage
           
       - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
-        if: hashFiles('macemu-${{ inputs.platform }}-basilisk2.AppImage') != ''
+        if: hashFiles('macemu-${{ inputs.platform }}-BasiliskII.AppImage') != ''
         uses: "ncipollo/release-action@v1"
         with:
           tag: "continuous"
@@ -49,6 +49,6 @@ jobs:
           prerelease: false
           draft: false
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-basilisk2.AppImage"
+          artifacts: "macemu-${{ inputs.platform }}-BasiliskII.AppImage"
           artifactContentType: application/vnd.appimage
           

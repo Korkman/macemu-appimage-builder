@@ -3,8 +3,8 @@
 	# Launch with GUI
 	set -eu
 	
-	cd "$(dirname "$0")"
-	./SheepShaverMmap --nogui false "$@"
+	cd "$(dirname "$0")/macemuAppImages"
+	./SheepShaver.AppImage --nogui false "$@"
 	
 	exit
 }

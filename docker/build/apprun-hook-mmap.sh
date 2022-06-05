@@ -36,14 +36,15 @@ Please perform this step with root permissions:" \
 	# function to display a terminal in the likely event we were started via a GUI menu
 	runVisible() {
 		# try a few terminals
-		if command -v x-terminal-emulator > /dev/null; then exec x-terminal-emulator -e "$me" "$@";
-		elif command -v konsole > /dev/null; then exec konsole -e "$me" "$@";
-		elif command -v xfce4-terminal > /dev/null; then exec xfce4-terminal -x "$me" "$@";
-		elif command -v gnome-terminal > /dev/null; then exec gnome-terminal -- "$me" "$@";
-		elif command -v xterm > /dev/null; then exec xterm -e "$me" "$@";
+		absMe=$(realpath "$me")
+		if command -v x-terminal-emulator > /dev/null; then exec x-terminal-emulator -e "$absMe" "$@";
+		elif command -v konsole > /dev/null; then exec konsole -e "$absMe" "$@";
+		elif command -v xfce4-terminal > /dev/null; then exec xfce4-terminal -x "$absMe" "$@";
+		elif command -v gnome-terminal > /dev/null; then exec gnome-terminal -- "$absMe" "$@";
+		elif command -v xterm > /dev/null; then exec xterm -e "$absMe" "$@";
 		else
 			# as last resort, we just hope the user is already running in a terminal
-			exec "$me" "$@"
+			exec "$absMe" "$@"
 		fi
 	}
 	
@@ -122,13 +123,6 @@ https://wiki.debian.org/mmap_min_addr
 	fi
 	
 	# run image
-	cd "$(dirname "$0")/macemuAppImages"
-	./SheepShaver.AppImage "$@"
 	
-	if [ "$pauseAfterExecution" = "yes" ]
-	then
-		echo "Press enter to continue ..."; read -r enter
-	fi
-	
-	exit
+	return
 }

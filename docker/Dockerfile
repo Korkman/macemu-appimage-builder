@@ -110,11 +110,13 @@ RUN apt-get -y --no-install-recommends install desktop-file-utils libfile-mimein
 # download macemu (BasiliskII and SheepShaver source)
 WORKDIR /usr/local/src
 
-# copy fll build directory
+# clone macemu source
+RUN [ "$MACEMU_SOURCE" != "git" ] || git clone $MACEMU_GIT_ARGS macemu
+
+# copy full build directory
 COPY build /build
 
-# some variants of source to build
-RUN [ "$MACEMU_SOURCE" != "git" ] || git clone $MACEMU_GIT_ARGS macemu
+# local macemu source
 RUN [ "$MACEMU_SOURCE" != "local" ] || ln -s /build/macemu /usr/local/src/macemu
 
 WORKDIR /usr/local/src/macemu
@@ -241,10 +243,10 @@ RUN cp /build/SheepShaver.png /output/installFiles/ && \
 	cp /build/SheepShaverGUI.desktop /output/installFiles/ && \
 	cp /build/helpers/Install /output/ && \
 	cp /build/helpers/SheepShaver /output/ && \
-	cp /build/helpers/SheepShaverGUI /output/ && \
-	cp /build/helpers/SheepShaverMmap /output/ \
+	cp /build/helpers/SheepShaverGUI /output/ \
 ;
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
+COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/apprun-hook-mmap.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
 	--desktop-file=/build/SheepShaver.desktop \

@@ -67,6 +67,7 @@
 		echo "Cleaning up obsolete stuff from previous installs ..."
 		rm -f "$binDir/macemuAppImages/SheepShaver"
 		rm -f "$binDir/macemuAppImages/SheepShaverGUI"
+		rm -f "$binDir/SheepShaverMmap"
 
 		# Renaming previous .home directories ...
 		if [ -e "$binDir/macemuAppImages/SheepShaver.home" -a ! -e "$binDir/macemuAppImages/SheepShaver.AppImage.home" ]

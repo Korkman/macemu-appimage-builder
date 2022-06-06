@@ -44,30 +44,30 @@ jobs:
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz
                 
       # add to continuous release
-      - name: Upload .tar.gz asset to continuous release
-        uses: "ncipollo/release-action@v1"
-        with:
-          tag: "continuous"
-          name: "Continuous release"
-          prerelease: false
-          draft: false
-          bodyFile: .github/AUTORELEASE.md
-          allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz"
-          artifactContentType: application/gzip
+      #- name: Upload .tar.gz asset to continuous release
+      #  uses: "ncipollo/release-action@v1"
+      #  with:
+      #    tag: "continuous"
+      #    name: "Continuous release"
+      #    prerelease: false
+      #    draft: false
+      #    bodyFile: .github/AUTORELEASE.md
+      #    allowUpdates: true
+      #    artifacts: "macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz"
+      #    artifactContentType: application/gzip
       
       # add AppImage direct downloads
       - name: Rename SheepShaver.AppImage for platform (if present)
         id: sheepshaver_appimage
         run: |
-          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage && \
+          mv macemu/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         id: basilisk2_appimage
         run: |
-          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage && \
+          mv macemu/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
       

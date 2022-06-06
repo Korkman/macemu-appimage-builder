@@ -23,14 +23,14 @@ jobs:
       - name: Rename SheepShaver.AppImage for platform (if present)
         id: sheepshaver_appimage
         run: |
-          mv macemu/macemuAppImages/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
+          mv macemu/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         id: basilisk2_appimage
         run: |
-          mv macemu/macemuAppImages/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
+          mv macemu/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
       

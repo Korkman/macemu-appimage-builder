@@ -60,7 +60,7 @@
 	# NOTE: added --sdlrender software as a more conservative default (fixes crashes on Fedora 36)
 	if [ "${pauseAfterExecution:-no}" = "yes" ]
 	then
-		${EXEC} --sdlrender software "$@"
+		"${EXEC}" --sdlrender software "$@"
 		echo "Press enter to continue ..."; read -r enter
 	else
 		exec "${EXEC}" --sdlrender software "$@"   

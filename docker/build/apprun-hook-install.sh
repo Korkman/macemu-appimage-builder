@@ -44,6 +44,7 @@
 		if [ "$destFile" != "$APPIMAGE" ]
 		then
 			echo -n "Installing to $destFile ..."
+			mkdir -p "$binDir"
 			if [ -e "$destFile" ]
 			then
 				echo

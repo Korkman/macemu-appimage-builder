@@ -119,12 +119,8 @@ COPY build /build
 # local macemu source
 RUN [ "$MACEMU_SOURCE" != "local" ] || ln -s /build/macemu /usr/local/src/macemu
 
+RUN mkdir /output
 WORKDIR /usr/local/src/macemu
-
-RUN mkdir -p /output/installFiles
-RUN mkdir -p /output/macemuAppImages
-
-
 
 FROM buildenv AS buildenv-basilisk2
 ARG SKIP_VHD="n"
@@ -163,17 +159,13 @@ RUN [ "$PACKAGING" != "tarball" ] || ( \
 	cp /build/AppRun.sh AppDir/ && \
 	chmod a+x AppDir/AppRun.sh \
 )
-RUN cp /build/BasiliskII.png /output/installFiles/ && \
-	cp /build/BasiliskIIGUI.png /output/installFiles/ && \
-	cp /build/BasiliskII.desktop /output/installFiles/ && \
-	cp /build/BasiliskIIGUI.desktop /output/installFiles/ && \
-	cp /build/helpers/Install /output/ && \
-	cp /build/helpers/BasiliskII /output/ && \
-	cp /build/helpers/BasiliskIIGUI /output/ && \
-	mkdir -p AppDir/usr/share/metainfo && \
-	cp /build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/ \
+RUN mkdir -p AppDir/usr/share/metainfo && \
+	cp /build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/ && \
+	mkdir -p AppDir/usr/share/icons && \
+	cp /build/BasiliskIIGUI.png AppDir/usr/share/icons/ \
 ;
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
+COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
 	--desktop-file=/build/BasiliskII.desktop \
@@ -194,12 +186,12 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	echo "Packaging with linuxdeploy" && \
 	mv BasiliskII-*.AppImage BasiliskII.AppImage && \
-	cp ./*.AppImage /output/macemuAppImages/ && \
+	cp ./*.AppImage /output/ && \
 	./BasiliskII.AppImage --appimage-extract > /dev/null && \
 	appdir-lint.sh squashfs-root && \
 	rm -rf squashfs-root \
 )
-RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/BasiliskII.AppDir.tar.gz AppDir)
+RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/BasiliskII.AppDir.tar.gz AppDir)
 
 
 
@@ -239,18 +231,14 @@ RUN [ "$PACKAGING" != "tarball" ] || ( \
 	cp /build/AppRun.sh AppDir/ && \
 	chmod a+x AppDir/AppRun.sh \
 )
-RUN cp /build/SheepShaver.png /output/installFiles/ && \
-	cp /build/SheepShaverGUI.png /output/installFiles/ && \
-	cp /build/SheepShaver.desktop /output/installFiles/ && \
-	cp /build/SheepShaverGUI.desktop /output/installFiles/ && \
-	cp /build/helpers/Install /output/ && \
-	cp /build/helpers/SheepShaver /output/ && \
-	cp /build/helpers/SheepShaverGUI /output/ && \
-	mkdir -p AppDir/usr/share/metainfo && \
-	cp /build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/ \
+RUN mkdir -p AppDir/usr/share/metainfo && \
+	cp /build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/ && \
+	mkdir -p AppDir/usr/share/icons && \
+	cp /build/SheepShaverGUI.png AppDir/usr/share/icons/ \
 ;
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
-COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/apprun-hook-mmap.sh
+COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
+COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/20-apprun-hook-mmap.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
 	--desktop-file=/build/SheepShaver.desktop \
@@ -271,12 +259,12 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	echo "Packaging with linuxdeploy" && \
 	mv SheepShaver-*.AppImage SheepShaver.AppImage && \
-	cp ./*.AppImage /output/macemuAppImages/ && \
+	cp ./*.AppImage /output/ && \
 	./SheepShaver.AppImage --appimage-extract > /dev/null && \
 	appdir-lint.sh squashfs-root && \
 	rm -rf squashfs-root \
 )
-RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/macemuAppImages/SheepShaver.AppDir.tar.gz AppDir)
+RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/SheepShaver.AppDir.tar.gz AppDir)
 
 
 FROM buildenv AS merge
@@ -300,4 +288,4 @@ COPY --from=buildenv-basilisk2 /output /
 
 FROM scratch AS nothing
 # dummy target to test gh actions
-COPY build/helpers /
+COPY build/BasiliskII.desktop /

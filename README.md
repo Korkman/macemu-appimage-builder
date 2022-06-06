@@ -1,46 +1,45 @@
 # macemu-appimage-builder
+[![BasiliskII amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml) [![SheepShaver amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
+
 Builds the popular classic Macintosh emulators BasiliskII (68k Macs) and SheepShaver (PowerPC Macs)
 from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit and 64-bit x86 Linux and creates AppImages which run instantly on many Linux desktops.
 
-Download the [latest build](https://github.com/Korkman/macemu-appimage-builder/releases/latest)
+Download the [latest builds](https://github.com/Korkman/macemu-appimage-builder/releases/latest).
 
-[![BasiliskII amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml) [![SheepShaver amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
-
-## Download contents
+## Installing with the integrated installer (optional)
+If you don't use [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher) or  Open a terminal, run
 ```
-BasiliskII       - launcher for the 68k emulator
-BasiliskIIGUI    - launcher for the 68k emulator GUI
-SheepShaver      - launcher for the PPC emulator
-SheepShaverGUI   - launcher for the PPC emulator GUI
-macemuAppImages/ - contains the actual AppImages
-
-Install          - script to install as applications into home directory
-installFiles/    - contains .desktop files and .png icons for the installation
+./SheepShaver.AppImage --install
 ```
 
-## About the launchers
-They are mostly optional. They make GUI and non-GUI startup easily accessible.
-The main point is to generate the AppImages in the directory `macemuAppImages`. You
-can skip the launchers if you want to.
+The AppImages will be copied to `$HOME/.local/bin/`[^1] and create
+their menu items.
 
-## Install (optional)
-The install script will copy launchers and AppImages to `$HOME/.local/bin/`[^1] and create
-menu entries for the application menu for convenience. You may have to log out and log in
-for the menu entries to appear. Also, make sure your PATH variable contains the installer
-destination directory (true for sane Linux distros).
+## Creating menu items without installing
+Open a terminal, run
+```
+./SheepShaver.AppImage --add-menu-items
+```
+The menu items will be placed in the "System" group. You may have to log out and log in for the menu entries to appear. When you change the AppImage locations, just run the command again to update the menu items.
+
+## Uninstalling, removing menu items
+```
+./SheepShaver.AppImage --remove-menu-items
+./SheepShaver.AppImage --uninstall
+```
+
+
 
 ## Where to put startup.wav
-Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it right into `macemuAppImages`. When installed it is located in `$HOME/.local/bin/macemuAppImages`[^1].
+Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it into the same directory where the AppImages are located.
 
 ## Where will preferences be saved
-In your home directory. Unless…
+".sheepshaver_prefs", ".basilisk_ii_prefs" in your home directory . Unless…
 
-…you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within `macemuAppImages`. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
+…you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
-## If SheepShaver doesn't start
-Try running SheepShaver in a terminal to see constructive error messages.
-One common problem is that Linux by default disallows low memory access, which SheepShaver unfortunately requires.
-The launchers provide further instructions.
+## The "keycodes" file
+If you use an international keyboard, you need a "keycodes" file like the one you can [download here](https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/keycodes). Place it along with your virtual disks, in your home directory - anywhere. The location has to be referenced in the prefs.
 
 ## AppImage compatibility
 AppImages are portable Linux applications containing all the libraries required to run[^2].
@@ -48,7 +47,11 @@ Their only dependency is having FUSE available (which basically every sane Linux
 If you don't have FUSE available, your can extract the contained files with the startup argument --appimage-extract.
 The contained executable script "AppRun" will run the application.
 
-## Guides on SheepShaver and Basilisk II
+## Notes
+* The integrated scripts will warn about and try to handle low mmap addressing policies which would prevent SheepShaver from starting.
+* The option "sdlrender" is currently set to "software" to maximize compatibility. You can change this by editing the .desktop files in `~/.local/share/applications` and appending `--sdlrender opengl`. Do not expect any difference in performance.
+
+## Guides on SheepShaver and Basilisk II in general
 See the excellent [E-Maculation Wiki](https://www.emaculation.com/doku.php/ubuntu) and [forum](https://www.emaculation.com/forum/)
 # Building your own
 

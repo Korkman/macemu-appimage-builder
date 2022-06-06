@@ -1,7 +1,7 @@
 #! /bin/sh
 {
 	set -eu
-
+	
 	SELF=$(readlink -f "$0")
 	HERE=${SELF%/*}
 	APPDIR=${SELF%/*}
@@ -32,7 +32,7 @@
 			fi
 		done
 	done
-
+	
 	# new series of environment overrides to bundle GTK
 	APP_GTK_THEME="${APP_GTK_THEME:-yes}"
 	if [ "${APP_GTK_THEME}" != "no" ]
@@ -42,7 +42,7 @@
 		export GTK_EXE_PREFIX="${HERE}"
 		export GTK2_RC_FILES="${HERE}/usr/share/themes/${APP_GTK_THEME}/gtk-2.0/gtkrc"
 	fi
-
+	
 	# thank you https://github.com/aferrero2707/appimage-helper-scripts
 	export GDK_PIXBUF_MODULEDIR="${HERE}/usr/lib/gdk-pixbuf-2.0/loaders"
 	export GDK_PIXBUF_MODULE_FILE="${HERE}/usr/lib/gdk-pixbuf-2.0/loaders.cache"

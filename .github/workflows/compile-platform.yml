@@ -79,6 +79,7 @@ jobs:
           name: "Continuous release"
           prerelease: false
           draft: false
+          bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
           artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage"
           artifactContentType: application/vnd.appimage
@@ -91,6 +92,7 @@ jobs:
           name: "Continuous release"
           prerelease: false
           draft: false
+          bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
           artifacts: "macemu-${{ inputs.platform }}-basilisk2.AppImage"
           artifactContentType: application/vnd.appimage

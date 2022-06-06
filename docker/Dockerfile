@@ -1,4 +1,5 @@
 ARG DISTRO=debian:bullseye
+ARG MACEMU_SOURCE="git"
 FROM $DISTRO AS buildenv
 
 ENV DEBIAN_FRONTEND='noninteractive'
@@ -43,8 +44,6 @@ RUN if [ -e /usr/bin/python2 ] && [ ! -e /usr/bin/python ]; then ln -s /usr/bin/
 ARG SKIP_VHD="n"
 ARG PACKAGING="linuxdeploy"
 ARG LXDEPLOY_ARCH=""
-ARG MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
-ARG MACEMU_SOURCE="git"
 
 
 # get some architecture "variables" going
@@ -107,22 +106,26 @@ RUN wget https://github.com/AppImage/pkg2appimage/raw/master/excludelist -O excl
 RUN apt-get -y --no-install-recommends install desktop-file-utils libfile-mimeinfo-perl
 
 
-# download macemu (BasiliskII and SheepShaver source)
+RUN mkdir /output
+
 WORKDIR /usr/local/src
 
-# clone macemu source
-RUN [ "$MACEMU_SOURCE" != "git" ] || git clone $MACEMU_GIT_ARGS macemu
-
-# copy full build directory
-COPY build /build
 
 # local macemu source
-RUN [ "$MACEMU_SOURCE" != "local" ] || ln -s /build/macemu /usr/local/src/macemu
-
-RUN mkdir /output
+FROM buildenv AS buildenv-src-local
+COPY build/macemu /usr/local/src/macemu
 WORKDIR /usr/local/src/macemu
 
-FROM buildenv AS buildenv-basilisk2
+
+# download macemu (BasiliskII and SheepShaver source)
+FROM buildenv AS buildenv-src-git
+ARG MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
+RUN git clone $MACEMU_GIT_ARGS macemu
+WORKDIR /usr/local/src/macemu
+
+
+# basilisk2 thread
+FROM buildenv-src-$MACEMU_SOURCE AS buildenv-basilisk2
 ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
 ARG PACKAGING="linuxdeploy"
@@ -154,16 +157,13 @@ RUN make install DESTDIR=AppDir
 
 WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 
-RUN [ "$PACKAGING" != "tarball" ] || ( \
-	mkdir -p AppDir/usr/lib && \
-	cp /build/AppRun.sh AppDir/ && \
-	chmod a+x AppDir/AppRun.sh \
-)
-RUN mkdir -p AppDir/usr/share/metainfo && \
-	cp /build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/ && \
-	mkdir -p AppDir/usr/share/icons && \
-	cp /build/BasiliskIIGUI.png AppDir/usr/share/icons/ \
-;
+COPY build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/
+COPY build/BasiliskIIGUI.png      AppDir/usr/share/icons/
+COPY build/bundle-gtk2.sh     /build/bundle-gtk2.sh
+COPY build/BasiliskII.desktop /build/BasiliskII.desktop
+COPY build/BasiliskII.png     /build/BasiliskII.png
+COPY build/AppRun.sh          /build/AppRun.sh
+
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
@@ -195,7 +195,7 @@ RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /o
 
 
 
-FROM buildenv AS buildenv-sheepshaver
+FROM buildenv-src-$MACEMU_SOURCE AS buildenv-sheepshaver
 ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
 ARG PACKAGING="linuxdeploy"
@@ -226,16 +226,13 @@ RUN make install DESTDIR=AppDir
 
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
 
-RUN [ "$PACKAGING" != "tarball" ] || ( \
-	mkdir -p AppDir/usr/lib && \
-	cp /build/AppRun.sh AppDir/ && \
-	chmod a+x AppDir/AppRun.sh \
-)
-RUN mkdir -p AppDir/usr/share/metainfo && \
-	cp /build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/ && \
-	mkdir -p AppDir/usr/share/icons && \
-	cp /build/SheepShaverGUI.png AppDir/usr/share/icons/ \
-;
+COPY build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/
+COPY build/SheepShaverGUI.png      AppDir/usr/share/icons/
+COPY build/bundle-gtk2.sh      /build/bundle-gtk2.sh
+COPY build/SheepShaver.desktop /build/SheepShaver.desktop
+COPY build/SheepShaver.png     /build/SheepShaver.png
+COPY build/AppRun.sh           /build/AppRun.sh
+
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/20-apprun-hook-mmap.sh
@@ -267,7 +264,7 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/SheepShaver.AppDir.tar.gz AppDir)
 
 
-FROM buildenv AS merge
+FROM buildenv-src-$MACEMU_SOURCE AS merge
 # merge outputs from builds
 
 COPY --from=buildenv-sheepshaver /output /output

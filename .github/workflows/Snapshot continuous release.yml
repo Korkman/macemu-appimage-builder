@@ -47,6 +47,7 @@ jobs:
           repo: ${{ github.repository }}
           version: 'tags/continuous'
           file: ".*\\.AppImage"
+          target: "./"
           regex: true
       
       - name: ls for the logs

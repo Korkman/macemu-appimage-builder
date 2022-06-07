@@ -1,0 +1,63 @@
+name: Build bot
+
+on:
+  issue_comment:
+    types:
+    - created
+jobs:
+  basilisk2_amd64:
+    if: ${{ contains('Hey build bot, please build macemu-amd64-basilisk2.AppImage!', github.event.comment.body }}
+    name: "BasiliskII amd64"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: amd64
+      target_stage: basilisk2
+  basilisk2_i386:
+    if: ${{ contains('Hey build bot, please build macemu-i386-basilisk2.AppImage!', github.event.comment.body }}
+    name: "BasiliskII i386"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: i386
+      target_stage: basilisk2
+  sheepshaver_amd64:
+    if: ${{ contains('Hey build bot, please build macemu-amd64-sheepshaver.AppImage!', github.event.comment.body }}
+    name: "SheepShaver amd64"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: amd64
+      target_stage: sheepshaver
+  sheepshaver_i386:
+    if: ${{ contains('Hey build bot, please build macemu-i386-sheepshaver.AppImage!', github.event.comment.body }}
+    name: "SheepShaver i386"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: i386
+      target_stage: sheepshaver
+  reply:
+    if: ${{ always() }}
+    needs: [basilisk2_amd64, basilisk2_i386, sheepshaver_amd64, sheepshaver_i386]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Message success
+      if: ${{ success() }}
+      uses: actions/github-script@v4
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Build succeeded! ✅',
+          });
+    - name: Message failure
+      if: ${{ failure() }}
+      uses: actions/github-script@v4
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Build failed! ❌',
+          });
+          

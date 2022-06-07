@@ -53,7 +53,13 @@ jobs:
       platform: i386
       target_stage: sheepshaver
   reply:
-    if: always()
+    if: |
+      always() && (
+      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-basilisk2.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build nothing!') )
     needs: [gotcha, basilisk2_amd64, basilisk2_i386, sheepshaver_amd64, sheepshaver_i386]
     runs-on: ubuntu-latest
     steps:

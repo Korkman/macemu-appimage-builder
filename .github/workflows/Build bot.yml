@@ -63,6 +63,12 @@ jobs:
             repo: context.repo.repo,
             body: "Build succeeded! ✅\n\nDownload from the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous)",
           });
+          github.reactions.createForIssueComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: context.payload.comment.id,
+            content: "+1",
+          });
     - name: Message failure
       if: ${{ failure() }}
       uses: actions/github-script@v4
@@ -72,6 +78,11 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Build failed! ❌',
+            body: "Build failed! ❌\n\nIf multiple builds were requested, visit the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous) to see which succeeded.",
           });
-          
+          github.reactions.createForIssueComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: context.payload.comment.id,
+            content: "-1",
+          });          

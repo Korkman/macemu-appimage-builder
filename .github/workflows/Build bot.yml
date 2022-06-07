@@ -6,7 +6,7 @@ on:
     - created
 jobs:
   gotcha:
-    if: ${{ contains('Hey build bot, please build', github.event.comment.body) }}
+    if: contains('Hey build bot, please build', github.event.comment.body)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v4
@@ -20,35 +20,35 @@ jobs:
               content: "rocket",
             });
   basilisk2_amd64:
-    if: ${{ contains('Hey build bot, please build macemu-amd64-basilisk2.AppImage!', github.event.comment.body) }}
+    if: contains('Hey build bot, please build macemu-amd64-basilisk2.AppImage!', github.event.comment.body)
     name: "BasiliskII amd64"
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: amd64
       target_stage: basilisk2
   basilisk2_i386:
-    if: ${{ contains('Hey build bot, please build macemu-i386-basilisk2.AppImage!', github.event.comment.body) }}
+    if: contains('Hey build bot, please build macemu-i386-basilisk2.AppImage!', github.event.comment.body)
     name: "BasiliskII i386"
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: i386
       target_stage: basilisk2
   sheepshaver_amd64:
-    if: ${{ contains('Hey build bot, please build macemu-amd64-sheepshaver.AppImage!', github.event.comment.body) }}
+    if: contains('Hey build bot, please build macemu-amd64-sheepshaver.AppImage!', github.event.comment.body)
     name: "SheepShaver amd64"
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: amd64
       target_stage: sheepshaver
   sheepshaver_i386:
-    if: ${{ contains('Hey build bot, please build macemu-i386-sheepshaver.AppImage!', github.event.comment.body) }}
+    if: contains('Hey build bot, please build macemu-i386-sheepshaver.AppImage!', github.event.comment.body)
     name: "SheepShaver i386"
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: i386
       target_stage: sheepshaver
   reply:
-    if: ${{ contains('Hey build bot, please build', github.event.comment.body) && always() }}
+    if: contains('Hey build bot, please build', github.event.comment.body) && always()
     needs: [basilisk2_amd64, basilisk2_i386, sheepshaver_amd64, sheepshaver_i386]
     runs-on: ubuntu-latest
     steps:

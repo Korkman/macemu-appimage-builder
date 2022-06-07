@@ -6,7 +6,7 @@ on:
     - created
 jobs:
   gotcha:
-    if: contains(github.event.comment.body, ['Hey build bot, please build nothing!', 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!', 'Hey build bot, please build macemu-i386-basilisk2.AppImage!', 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!', 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!'])
+    if: contains(github.event.comment.body, fromJson("['Hey build bot, please build nothing!', 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!', 'Hey build bot, please build macemu-i386-basilisk2.AppImage!', 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!', 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!']"))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v4

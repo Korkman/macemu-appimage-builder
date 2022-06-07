@@ -20,30 +20,37 @@ jobs:
           NEW_RELEASE_NAME=${{ github.event.inputs.new_release_name }}
           echo "NEW_RELEASE_NAME=${NEW_RELEASE_NAME:-$(date +%Y-%m-%d)}" >> $GITHUB_ENV
         
-        # download continuous release assets
-      - uses: dsaltares/fetch-gh-release-asset@master
+      - name: Refresh tag (delete and create)
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            try {
+                await github.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: "tags/$NEW_RELEASE_NAME"
+                })
+            } catch (e) {
+              console.log("Tag '$NEW_RELEASE_NAME' does not exist yet? Error: " + e)
+            }
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/$NEW_RELEASE_NAME",
+              sha: context.sha
+            })
+        
+      - name: Download continuous release assets
+        uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: ${{ github.repository }}
           version: 'tags/continuous'
-          file: 'macemu-amd64-basilisk2.AppImage'
-      - uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: ${{ github.repository }}
-          version: 'tags/continuous'
-          file: 'macemu-amd64-sheepshaver.AppImage'
-      - uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: ${{ github.repository }}
-          version: 'tags/continuous'
-          file: 'macemu-i386-basilisk2.AppImage'
-      - uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: ${{ github.repository }}
-          version: 'tags/continuous'
-          file: 'macemu-i386-sheepshaver.AppImage'
+          file: '.*\.AppImage'
+          regex: true
       
-      # add to snapshot release
-      - uses: "ncipollo/release-action@v1"
+      - name: Create snapshot release
+        uses: "ncipollo/release-action@v1"
         with:
           tag: ${{ env.NEW_RELEASE_NAME }}
           name: ${{ env.NEW_RELEASE_NAME }}
@@ -51,4 +58,6 @@ jobs:
           draft: false
           bodyFile: .github/SNAPSHOTRELEASE.md
           allowUpdates: true
+          artifactErrorsFailBuild: true
           artifacts: "*.AppImage"
+          artifactContentType: application/vnd.appimage

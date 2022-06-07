@@ -5,6 +5,19 @@ on:
     types:
     - created
 jobs:
+  gotcha:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v4
+        with:
+          script: |
+            const {owner, repo} = context.issue
+            github.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: context.payload.comment.id,
+              content: "rocket",
+            });
   basilisk2_amd64:
     if: ${{ contains('Hey build bot, please build macemu-amd64-basilisk2.AppImage!', github.event.comment.body) }}
     name: "BasiliskII amd64"
@@ -47,10 +60,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Build succeeded! ✅
-            
-            Download from the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous)
-            ',
+            body: "Build succeeded! ✅\n\nDownload from the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous)",
           });
     - name: Message failure
       if: ${{ failure() }}

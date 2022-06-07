@@ -49,6 +49,9 @@ jobs:
           file: ".*\\.AppImage"
           regex: true
       
+      - name: ls for the logs
+        run: ls -al
+      
       - name: Create snapshot release
         uses: "ncipollo/release-action@v1"
         with:

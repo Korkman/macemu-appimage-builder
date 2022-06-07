@@ -12,7 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      # add to continuous release
+      # download continuous release assets
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: ${{ github.repository }}
+          version: 'tags/continuous'
+          file: 'macemu-amd64-basilisk2.AppImage'
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: ${{ github.repository }}
+          version: 'tags/continuous'
+          file: 'macemu-amd64-sheepshaver.AppImage'
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: ${{ github.repository }}
+          version: 'tags/continuous'
+          file: 'macemu-i386-basilisk2.AppImage'
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: ${{ github.repository }}
+          version: 'tags/continuous'
+          file: 'macemu-i386-sheepshaver.AppImage'
+      
+      # add to snapshot release
       - uses: "ncipollo/release-action@v1"
         with:
           tag: ${{ github.event.inputs.new_release_name }}
@@ -21,3 +43,4 @@ jobs:
           draft: true
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
+          artifacts: "*.AppImage"

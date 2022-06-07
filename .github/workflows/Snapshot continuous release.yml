@@ -15,8 +15,8 @@ jobs:
       # add to continuous release
       - uses: "ncipollo/release-action@v1"
         with:
-          tag: ${{ github.inputs.new_release_name }}
-          name: ${{ github.inputs.new_release_name }}
+          tag: ${{ github.event.inputs.new_release_name }}
+          name: ${{ github.event.inputs.new_release_name }}
           prerelease: false
           draft: true
           bodyFile: .github/AUTORELEASE.md

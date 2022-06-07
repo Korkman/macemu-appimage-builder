@@ -46,7 +46,7 @@ jobs:
         with:
           repo: ${{ github.repository }}
           version: 'tags/continuous'
-          file: '.*\.AppImage'
+          file: ".*\\.AppImage"
           regex: true
       
       - name: Create snapshot release

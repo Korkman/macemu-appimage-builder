@@ -47,7 +47,10 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Build succeeded! ✅',
+            body: 'Build succeeded! ✅
+            
+            Download from the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous)
+            ',
           });
     - name: Message failure
       if: ${{ failure() }}

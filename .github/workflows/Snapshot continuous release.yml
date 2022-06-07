@@ -41,6 +41,6 @@ jobs:
           name: ${{ github.event.inputs.new_release_name }}
           prerelease: false
           draft: true
-          bodyFile: .github/AUTORELEASE.md
+          bodyFile: .github/SNAPSHOTRELEASE.md
           allowUpdates: true
           artifacts: "*.AppImage"

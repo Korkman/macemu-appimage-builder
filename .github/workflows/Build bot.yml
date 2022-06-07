@@ -6,6 +6,7 @@ on:
     - created
 jobs:
   gotcha:
+    if: ${{ contains('Hey build bot, please build', github.event.comment.body) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v4
@@ -47,7 +48,7 @@ jobs:
       platform: i386
       target_stage: sheepshaver
   reply:
-    if: ${{ always() }}
+    if: ${{ contains('Hey build bot, please build', github.event.comment.body) && always() }}
     needs: [basilisk2_amd64, basilisk2_i386, sheepshaver_amd64, sheepshaver_i386]
     runs-on: ubuntu-latest
     steps:

@@ -48,7 +48,7 @@ jobs:
           tag: ${{ env.NEW_RELEASE_NAME }}
           name: ${{ env.NEW_RELEASE_NAME }}
           prerelease: false
-          draft: true
+          draft: false
           bodyFile: .github/SNAPSHOTRELEASE.md
           allowUpdates: true
           artifacts: "*.AppImage"

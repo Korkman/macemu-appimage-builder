@@ -1,0 +1,27 @@
+name: Delete tag
+on:
+  workflow_dispatch:
+    inputs:
+      tagname:
+        type: string
+        description: Tag name to delete
+        required: true
+
+jobs:
+  delete_tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      #- uses: actions/checkout@v3
+
+      - name: Delete tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            await github.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "tags/${{ github.event.inputs.tagname }}"
+            })

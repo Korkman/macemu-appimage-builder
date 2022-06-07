@@ -1,0 +1,23 @@
+name: Snapshot continuous release
+on:
+  workflow_dispatch:
+    inputs:
+      new_release_name:
+        description: Name of the new release
+        required: true
+        type: string
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      # add to continuous release
+      - uses: "ncipollo/release-action@v1"
+        with:
+          tag: ${{ github.inputs.new_release_name }}
+          name: ${{ github.inputs.new_release_name }}
+          prerelease: false
+          draft: true
+          bodyFile: .github/AUTORELEASE.md
+          allowUpdates: true

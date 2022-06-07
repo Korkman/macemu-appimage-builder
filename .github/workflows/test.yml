@@ -9,52 +9,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: dsaltares/fetch-gh-release-asset@master
+      #- uses: dsaltares/fetch-gh-release-asset@master
+      #  with:
+      #    repo: ${{ github.repository }}
+      #    version: 'tags/continuous'
+      #    file: 'macemu-amd64-sheepshaver.tar.gz'
+      
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
         with:
-          repo: ${{ github.repository }}
-          version: 'tags/continuous'
-          file: 'macemu-amd64-sheepshaver.tar.gz'
-      
-      - run: tar -xzf 'macemu-amd64-sheepshaver.tar.gz'
-      
-      
-      
-      # add AppImage direct downloads
-      - name: Rename SheepShaver.AppImage for platform (if present)
-        id: sheepshaver_appimage
-        run: |
-          mv macemu/SheepShaver.AppImage macemu-${{ inputs.platform }}-SheepShaver.AppImage && \
-          echo "::set-output name=exists::yes" || \
-          echo "::set-output name=exists::no"
-        
-      - name: Rename BasiliskII.AppImage for platform (if present)
-        id: basilisk2_appimage
-        run: |
-          mv macemu/BasiliskII.AppImage macemu-${{ inputs.platform }}-BasiliskII.AppImage && \
-          echo "::set-output name=exists::yes" || \
-          echo "::set-output name=exists::no"
-      
-      - name: Upload SheepShaver AppImage direct asset to continuous release (if present)
-        if: steps.sheepshaver_appimage.outputs.exists == 'yes'
-        uses: "ncipollo/release-action@v1"
-        with:
-          tag: "continuous"
-          name: "Continuous release"
-          prerelease: false
-          draft: false
-          allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-SheepShaver.AppImage"
-          artifactContentType: application/vnd.appimage
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: "test"
           
-      - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
-        if: steps.basilisk2_appimage.outputs.exists == 'yes'
-        uses: "ncipollo/release-action@v1"
-        with:
-          tag: "continuous"
-          name: "Continuous release"
-          prerelease: false
-          draft: false
-          allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-BasiliskII.AppImage"
-          artifactContentType: application/vnd.appimage
           

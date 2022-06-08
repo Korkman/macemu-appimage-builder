@@ -27,14 +27,15 @@
 	
 	if command -v systemd-path > /dev/null
 	then
-		binDir="$(systemd-path user-binaries)"
-		iconsDir="$(systemd-path user-shared)/icons"
-		appsDir="$(systemd-path user-shared)/applications"
+		binDir="$(env --ignore-environment systemd-path user-binaries)"
+		iconsDir="$(env --ignore-environment systemd-path user-shared)/icons"
+		appsDir="$(env --ignore-environment systemd-path user-shared)/applications"
 	else
 		echo "WARNING: systemd-path not found, falling back to hardcoded defaults"
-		binDir=~/.local/bin
-		iconsDir=~/.local/share/icons
-		appsDir=~/.local/share/applications
+		trueHome=$(env --ignore-environment bash -c "echo ~")
+		binDir="$trueHome/.local/bin"
+		iconsDir="$trueHome/.local/share/icons"
+		appsDir=~"$trueHome/.local/share/applications"
 	fi
 	
 	if [ "${1:-}" = "--install" ]

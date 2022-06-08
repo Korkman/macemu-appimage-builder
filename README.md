@@ -7,13 +7,12 @@ from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 
 Download the [latest builds](https://github.com/Korkman/macemu-appimage-builder/releases).
 
 ## Installing with the integrated installer (optional)
-If you don't use [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher) or  Open a terminal, run
+If you don't use [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher) (which will install only one menu item), open a terminal and run
 ```
 ./SheepShaver.AppImage --install
 ```
 
-The AppImages will be copied to `$HOME/.local/bin/`[^1] and create
-their menu items.
+The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will be created: one forcing startup without and one with GUI.
 
 ## Creating menu items without installing
 Open a terminal, run
@@ -27,8 +26,6 @@ The menu items will be placed in the "System" group. You may have to log out and
 ./SheepShaver.AppImage --remove-menu-items
 ./SheepShaver.AppImage --uninstall
 ```
-
-
 
 ## Where to put startup.wav
 Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it into the same directory where the AppImages are located.
@@ -60,9 +57,9 @@ See the excellent [E-Maculation Wiki](https://www.emaculation.com/doku.php/ubunt
 * Docker
 * qemu-user with binfmt support for cross architecture builds
   <br>(for Debian: `apt-get install qemu-user-static`)
-* AppImage Launcher NOT installed (interferes with running AppImages inside Docker)
+* AppImage Launcher NOT installed ([interferes](https://github.com/TheAssassin/AppImageLauncher/issues/407) with running AppImages inside Docker)
 
-If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/docker/Dockerfile) might still be of help.
+If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/docker/Dockerfile), might still be of help.
 
 ## Compile
 ```
@@ -102,7 +99,7 @@ Builds are done through use of a Dockerfile. The script `compile` passes configu
 ## Build stages
 Through the use of [multi-stage](https://docs.docker.com/develop/develop-images/multistage-build/) and [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/), the process is partially parallelized.
 
-The stage "buildenv" prepares all build dependencies, stages "buildenv-basilisk2" and "buildenv-sheepshaver" compile and package to "/output" inside the image. The stages "basilisk2", "sheepshaver" and "combined" reduce the image to the contents of "/output". The script `compile` will then extract "/output" to the host "./output".
+The stage "buildenv" prepares all build dependencies, stages "buildenv-basilisk2" and "buildenv-sheepshaver" compile and package to "/output" inside the image. The stages "basilisk2", "sheepshaver" and "combined" reduce the image to the contents of "/output". The script `compile` passes options so the build process will extract the final image to the host directory ./output.
 
 
 # Footnotes

@@ -6,10 +6,16 @@ from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 
 
 Download the [latest builds](https://github.com/Korkman/macemu-appimage-builder/releases).
 
-## Installing with the integrated installer (optional)
-If you don't use [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher) (which will install only one menu item), open a terminal and run
+## Marking the downloaded files executable
+Using the SheepShaver AppImage file as an example, either use your preferred file manager or a terminal to mark it executable:
 ```
-./SheepShaver.AppImage --install
+chmod +x ./macemu-amd64-sheepshaver.AppImage
+```
+
+## Installing with the integrated installer (optional)
+If you don't use [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher) (which will install only one menu item per AppImage), open a terminal and run
+```
+./macemu-amd64-sheepshaver.AppImage --install
 ```
 
 The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will be created: one forcing startup without and one with GUI.
@@ -17,14 +23,14 @@ The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will b
 ## Creating menu items without installing
 Open a terminal, run
 ```
-./SheepShaver.AppImage --add-menu-items
+./macemu-amd64-sheepshaver.AppImage --add-menu-items
 ```
 The menu items will be placed in the "System" group. You may have to log out and log in for the menu entries to appear. When you change the AppImage locations, just run the command again to update the menu items.
 
 ## Uninstalling, removing menu items
 ```
-./SheepShaver.AppImage --remove-menu-items
-./SheepShaver.AppImage --uninstall
+./macemu-amd64-sheepshaver.AppImage --remove-menu-items
+./macemu-amd64-sheepshaver.AppImage --uninstall
 ```
 
 ## Where to put startup.wav
@@ -33,7 +39,7 @@ Download your favorite startup chime in WAVE format and name it startup.wav to h
 ## Where will preferences be saved
 ".sheepshaver_prefs", ".basilisk_ii_prefs" in your home directory . Unless…
 
-…you create directories named `SheepShaver.AppImage.home` and `BasiliskII.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
+…you create directories named `macemu-amd64-sheepshaver.AppImage.home` and `macemu-amd64-basilisk2.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ## The "keycodes" file
 If you use an international keyboard, you need a "keycodes" file like the one you can [download here](https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/keycodes). Place it along with your virtual disks, in your home directory - anywhere. The location has to be referenced in the prefs.

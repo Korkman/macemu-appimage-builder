@@ -1,8 +1,8 @@
 name: Snapshot continuous release
 on:
   schedule:
-    # run this every month on the second monday at 7:20'o clock UTC
-    - cron:  '20 7 8-14 * 1'
+    # Runs at 07:20 UTC on the 11th of every month. 
+    - cron:  '20 7 11 * *'
   workflow_dispatch:
     inputs:
       new_release_name:

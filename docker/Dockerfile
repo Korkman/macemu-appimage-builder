@@ -36,11 +36,6 @@ RUN apt-get -y --no-install-recommends install \
 #	libxxf86dga-dev \
 #	libsdl1.2-dev \
 
-# python2 for xen
-RUN apt-get -y --no-install-recommends install python2 python2-dev || apt-get -y --no-install-recommends install python python-dev
-# instant "python-is-python2" (missing in ubuntu:jammy)
-RUN if [ -e /usr/bin/python2 ] && [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python2 /usr/bin/python; fi
-
 ARG SKIP_VHD="n"
 ARG PACKAGING="linuxdeploy"
 ARG LXDEPLOY_ARCH=""
@@ -54,7 +49,25 @@ RUN /build/detect-archdir.sh && echo "ARCHDIR: $(</ARCHDIR)"
 
 # download xen (libvhd source)
 WORKDIR /usr/local/src/xen
-RUN [ "$SKIP_VHD" = y ] || git clone --depth 1 --branch RELEASE-4.8.1 https://github.com/mirage/xen.git .
+# python2 for xen
+RUN [ "$SKIP_VHD" = y ] || apt-get -y --no-install-recommends install python2 python2-dev || apt-get -y --no-install-recommends install python python-dev
+# instant "python-is-python2" (missing in ubuntu:jammy)
+RUN [ "$SKIP_VHD" = y ] || if [ -e /usr/bin/python2 ] && [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python2 /usr/bin/python; fi
+# added for attempting to compile libvhd on Xen arm64:
+RUN [ "$SKIP_VHD" = y ] || apt-get -y --no-install-recommends install libfdt-dev
+# xen 4.12 was the last to ship with blktap2, which contained libvhd
+RUN [ "$SKIP_VHD" = y ] || git clone --depth 1 --branch 'stable-4.12' 'https://xenbits.xen.org/git-http/xen.git' .
+# compile libvhd from Xen
+WORKDIR /usr/local/src/xen/tools
+RUN [ "$SKIP_VHD" = y ] || ./configure
+WORKDIR /usr/local/src/xen/tools/blktap2/vhd/lib
+# patch Makefile to allow some impurities
+#RUN [ "$SKIP_VHD" = y ] || (mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict)
+# build xentools libvhd
+RUN [ "$SKIP_VHD" = y ] || make -j $(nproc)
+RUN [ "$SKIP_VHD" = y ] || DESTDIR=/usr/lib make install
+RUN [ "$SKIP_VHD" = y ] || cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
+
 
 # download linuxdeploy (AppImage builder)
 WORKDIR /usr/local/bin
@@ -68,19 +81,8 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	ln -s /usr/local/bin/linuxdeploy.appdir/AppRun /usr/local/bin/linuxdeploy \
 )
 
-# compile libvhd from Xen
-# added for attempting to compile libvhd on Xen arm64:
-RUN [ "$SKIP_VHD" = y ] || apt-get -y --no-install-recommends install libfdt-dev
-WORKDIR /usr/local/src/xen/tools
 
-RUN [ "$SKIP_VHD" = y ] || ./configure
-WORKDIR /usr/local/src/xen/tools/blktap2/vhd/lib
-# patch Makefile to allow some impurities
-RUN [ "$SKIP_VHD" = y ] || (mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict)
-# build xentools libvhd
-RUN [ "$SKIP_VHD" = y ] || make -j $(nproc)
-RUN [ "$SKIP_VHD" = y ] || DESTDIR=/usr/lib make install
-RUN [ "$SKIP_VHD" = y ] || cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
+
 
 # install SDL
 RUN apt-get -y --no-install-recommends install libsdl2-dev

@@ -3,6 +3,21 @@
 {
 	set -eu
 	
+	if [ "${1:-nada}" = "--help" ]
+	then
+		echo "AppImage specific arguments (AppRun hook: apprun-hook-install.sh):"
+		echo "  --install"
+		echo "    Copy AppImage binary to home dir and create GUI menu entries."
+		echo "  --uninstall"
+		echo "    Remove GUI menu entries and delete AppImage binary."
+		echo "  --add-menu-items"
+		echo "    Create or update GUI menu entries, pointing to the current AppImage binary location."
+		echo "  --remove-menu-items"
+		echo "    Remove GUI menu entries."
+		echo
+		return
+	fi
+	
 	# quick return if no recognized argument is present
 	if [ "${1:-}" != "--install" ] && [ "${1:-}" != "--uninstall" ] && [ "${1:-}" != "--add-menu-items" ] && [ "${1:-}" != "--remove-menu-items" ]
 	then
@@ -32,7 +47,7 @@
 		appsDir="$(env --ignore-environment systemd-path user-shared)/applications"
 	else
 		echo "WARNING: systemd-path not found, falling back to hardcoded defaults"
-		trueHome=$(env --ignore-environment bash -c "echo ~")
+		trueHome=$(getent passwd "$(id -u -n)" | cut -d ":" -f 6)
 		binDir="$trueHome/.local/bin"
 		iconsDir="$trueHome/.local/share/icons"
 		appsDir=~"$trueHome/.local/share/applications"
@@ -44,7 +59,7 @@
 		destFile="$binDir/${PRODUCT}.AppImage"
 		if [ "$destFile" != "$APPIMAGE" ]
 		then
-			echo -n "Installing to $destFile ..."
+			printf "Installing to $destFile ..."
 			mkdir -p "$binDir"
 			if [ -e "$destFile" ]
 			then
@@ -57,7 +72,7 @@
 					echo "Aborted."
 					exit 2
 				fi
-				echo -n "Overwriting ..."
+				printf "Overwriting ..."
 			fi
 			
 			cp "$APPIMAGE" "$destFile"
@@ -84,7 +99,7 @@
 	
 	if [ "${1:-}" = "--uninstall" ]
 	then
-		echo -n "Uninstall $APPIMAGE ? (y/N)"
+		printf "Uninstall $APPIMAGE ? (y/N)"
 		read -r REPLY
 		if [ "$REPLY" != "Y" ] && [ "$REPLY" != "y" ]
 		then
@@ -94,7 +109,7 @@
 		
 		"$APPIMAGE" --remove-menu-items
 		
-		echo -n "Deleting myself ..."
+		printf "Deleting myself ..."
 		rm -f "$APPIMAGE"
 		echo " done."
 		
@@ -103,7 +118,7 @@
 	
 	if [ "${1:-}" = "--add-menu-items" ]
 	then
-		echo -n "Adding menu items ..."
+		printf "Adding menu items ..."
 		mkdir -p "$iconsDir"
 		mkdir -p "$appsDir"
 		
@@ -134,7 +149,7 @@
 	
 	if [ "${1:-}" = "--remove-menu-items" ]
 	then
-		echo -n "Removing menu items ..."
+		printf "Removing menu items ..."
 		rm -f "$appsDir/${METAPREFIX}.${PRODUCT}.desktop" || echo "Desktop file did not exist"
 		rm -f "$appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop" || echo "Desktop file did not exist (GUI)"
 		rm -f "$iconsDir/${METAPREFIX}.${PRODUCT}.png" || echo "Icon did not exist"

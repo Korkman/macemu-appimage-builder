@@ -41,6 +41,13 @@ AppImage Launcher is a tool to manage AppImage installations in a unified and in
 
 Guides for setting up SheepShaver and Basilisk II are available on the excellent [E-Maculation Wiki](https://www.emaculation.com/doku.php/sheepshaver_basiliskii_linux) and their [forum](https://www.emaculation.com/forum/) provides additional help.
 
+### CLI help and version information
+```
+./SheepShaver-x86_64.AppImage --help
+./SheepShaver-x86_64.AppImage --version
+```
+The AppImage specific help is output before SheepShaver's. The --version flag will display build environment details and a combined "edition version" hash.
+
 ## FAQ
 
 ### Where to put startup.wav?

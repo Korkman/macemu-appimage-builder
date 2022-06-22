@@ -5,7 +5,7 @@
 	SELF=$(readlink -f "$0")
 	HERE=${SELF%/*}
     
-	if [ "${1:-nada}" = "--version" ] || [ "${1:-nada}" = "--help" ]
+	if [ "${1:-nada}" = "--version" ]
 	then
         if [ -e "$HERE/usr/local/bin/SheepShaver" ]; then
             printf "SheepShaver "
@@ -27,12 +27,10 @@
             echo "  $(cat "$HERE/usr/local/share/version-linuxdeploy" | sed 's/, /,\n    /')"
         fi
 		echo
-	fi
-    if [ "${1:-nada}" = "--version" ]
-    then
         # SheepShaver does not support --version. Also, it is currently not meaningful at all.
+        # Therefore, exit here
         exit
-    fi
+	fi
 	if [ "${1:-nada}" = "--help" ]
 	then
 		echo "AppImage built-ins:"

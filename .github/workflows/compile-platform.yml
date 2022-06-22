@@ -5,9 +5,9 @@ on:
   workflow_call: # Allow reuse of this workflow
     inputs:
       platform:
-        description: "Target platform, e.g. amd64 or i386"
+        description: "Target platform, e.g. x86_64 or i386"
         required: true
-        default: "amd64"
+        default: "x86_64"
         type: string
       target_stage:
         description: "Target stage, e.g. combined or basilisk2 or sheepshaver"
@@ -60,14 +60,14 @@ jobs:
       - name: Rename SheepShaver.AppImage for platform (if present)
         id: sheepshaver_appimage
         run: |
-          mv macemu/SheepShaver.AppImage macemu-${{ inputs.platform }}-sheepshaver.AppImage && \
+          mv macemu/SheepShaver.AppImage SheepShaver-${{ inputs.platform }}.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         id: basilisk2_appimage
         run: |
-          mv macemu/BasiliskII.AppImage macemu-${{ inputs.platform }}-basilisk2.AppImage && \
+          mv macemu/BasiliskII.AppImage BasiliskII-${{ inputs.platform }}.AppImage && \
           echo "::set-output name=exists::yes" || \
           echo "::set-output name=exists::no"
       
@@ -81,7 +81,7 @@ jobs:
           draft: false
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-sheepshaver.AppImage"
+          artifacts: "SheepShaver-${{ inputs.platform }}.AppImage"
           artifactContentType: application/vnd.appimage
           
       - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
@@ -94,5 +94,5 @@ jobs:
           draft: false
           bodyFile: .github/AUTORELEASE.md
           allowUpdates: true
-          artifacts: "macemu-${{ inputs.platform }}-basilisk2.AppImage"
+          artifacts: "BasiliskII-${{ inputs.platform }}.AppImage"
           artifactContentType: application/vnd.appimage

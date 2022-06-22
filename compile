@@ -5,10 +5,10 @@
 
 # usage examples:
 
-# build combined package for amd64
-#   sudo ./compile amd64
-# build BasiliskII package only, for amd64
-#   sudo ./compile amd64 basilisk2
+# build combined package for x86_64
+#   sudo ./compile x86_64
+# build BasiliskII package only, for x86_64
+#   sudo ./compile x86_64 basilisk2
 # enter debug shell for the SheepShaver build environment in i386
 #   sudo ./compile i386 debug buildenv-sheepshaver
 #
@@ -32,9 +32,9 @@
 	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 	case "${PLATFORM}" in
-		""|"amd64")
-			echo "Building amd64"
-			DOCKER_SUFFIX="amd64"
+		""|"x86_64")
+			echo "Building x86_64"
+			DOCKER_SUFFIX="x86_64"
 			DOCKER_PLATFORM="linux/x86-64"
 			DISTRO="ubuntu:bionic"
 			SKIP_VHD="n"

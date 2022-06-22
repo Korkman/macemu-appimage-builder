@@ -12,6 +12,6 @@ jobs:
   compile-and-release:
     uses: ./.github/workflows/compile-platform.yml
     with:
-      platform: amd64
+      platform: x86_64
       target_stage: nothing
     

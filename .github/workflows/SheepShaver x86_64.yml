@@ -1,4 +1,4 @@
-name: BasiliskII amd64
+name: SheepShaver x86_64
 
 # Controls when the workflow will run
 on:
@@ -15,6 +15,6 @@ jobs:
   compile-and-release:
     uses: ./.github/workflows/compile-platform.yml
     with:
-      platform: amd64
-      target_stage: basilisk2
+      platform: x86_64
+      target_stage: sheepshaver
     

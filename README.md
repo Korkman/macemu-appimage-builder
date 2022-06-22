@@ -1,5 +1,5 @@
 # macemu-appimage-builder
-[![BasiliskII amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20amd64.yml) [![SheepShaver amd64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20amd64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
+[![BasiliskII x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml) [![SheepShaver x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
 
 Builds the popular classic Macintosh emulators BasiliskII (68k Macs) and SheepShaver (PowerPC Macs)
 from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit and 64-bit x86 Linux and creates AppImages which run instantly on many Linux desktops.
@@ -10,13 +10,13 @@ Download the [latest builds](https://github.com/Korkman/macemu-appimage-builder/
 ### Marking the downloaded files executable
 Using the SheepShaver AppImage file as an example, either use your preferred file manager or a terminal to mark it executable:
 ```
-chmod +x ./macemu-amd64-sheepshaver.AppImage
+chmod +x ./SheepShaver-x86_64.AppImage
 ```
 
 ### Installing with the integrated installer (optional)
 The best way to install is with the integrated installer. Open a terminal and run:
 ```
-./macemu-amd64-sheepshaver.AppImage --install
+./SheepShaver-x86_64.AppImage --install
 ```
 
 The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will be created: one forcing startup without and one with GUI.
@@ -24,14 +24,14 @@ The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will b
 ### Creating menu items without installing
 Open a terminal, run
 ```
-./macemu-amd64-sheepshaver.AppImage --add-menu-items
+./SheepShaver-x86_64.AppImage --add-menu-items
 ```
 The menu items will be placed in the "System" group and will point to the current location of the AppImage. You may have to log out and log in for the menu entries to appear. After changing the AppImage location just run the command again to update the menu items.
 
 ### Uninstalling, removing menu items
 ```
-./macemu-amd64-sheepshaver.AppImage --remove-menu-items
-./macemu-amd64-sheepshaver.AppImage --uninstall
+./SheepShaver-x86_64.AppImage --remove-menu-items
+./SheepShaver-x86_64.AppImage --uninstall
 ```
 
 ### Managed installation with AppImage Launcher (not recommended)
@@ -49,7 +49,7 @@ Download your favorite startup chime in WAVE format and name it startup.wav to h
 ### Where will preferences be saved?
 ".sheepshaver_prefs", ".basilisk_ii_prefs" in your home directory . Unless…
 
-…you create directories named `macemu-amd64-sheepshaver.AppImage.home` and `macemu-amd64-basilisk2.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
+…you create directories named `SheepShaver-x86_64.AppImage.home` and `BasiliskII-x86_64.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ### What is a "keycodes" file?
 If you use an international keyboard, you need a "keycodes" file like the one you can [download here](https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/keycodes). Place it along with your virtual disks, in your home directory - anywhere. The location has to be referenced in the prefs.
@@ -86,10 +86,10 @@ The process will delete all files in the directory "output" and produce a new bu
 Platform choices can be found within `compile`, target stage choices within the Dockerfile.
 Examples:
 ```
-# build combined package for amd64
-sudo ./compile amd64
-# build BasiliskII package only, for amd64
-sudo ./compile amd64 basilisk2
+# build combined package for x86_64
+sudo ./compile x86_64
+# build BasiliskII package only, for x86_64
+sudo ./compile x86_64 basilisk2
 # enter debug shell for the SheepShaver build environment in i386
 sudo ./compile i386 debug buildenv-sheepshaver
 ```

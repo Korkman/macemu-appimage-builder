@@ -13,7 +13,7 @@ jobs:
       #  with:
       #    repo: ${{ github.repository }}
       #    version: 'tags/continuous'
-      #    file: 'macemu-amd64-sheepshaver.tar.gz'
+      #    file: 'macemu-x86_64-sheepshaver.tar.gz'
       
       - name: Bump version and push tag
         id: tag_version

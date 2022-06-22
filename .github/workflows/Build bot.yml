@@ -7,10 +7,10 @@ on:
 jobs:
   gotcha:
     if: |
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-basilisk2.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-x86_64.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-i386.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-x86_64.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-i386.AppImage!') ||
       contains(github.event.comment.body, 'Hey build bot, please build nothing!')
     runs-on: ubuntu-latest
     steps:
@@ -24,29 +24,29 @@ jobs:
               comment_id: context.payload.comment.id,
               content: "rocket",
             });
-  basilisk2_amd64:
-    if: contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!')
-    name: "BasiliskII amd64"
+  basilisk2_x86_64:
+    if: contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-x86_64.AppImage!')
+    name: "BasiliskII x86_64"
     uses: ./.github/workflows/compile-platform.yml
     with:
-      platform: amd64
+      platform: x86_64
       target_stage: basilisk2
   basilisk2_i386:
-    if: contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-basilisk2.AppImage!')
+    if: contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-i386.AppImage!')
     name: "BasiliskII i386"
     uses: ./.github/workflows/compile-platform.yml
     with:
       platform: i386
       target_stage: basilisk2
-  sheepshaver_amd64:
-    if: contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!')
-    name: "SheepShaver amd64"
+  sheepshaver_x86_64:
+    if: contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-x86_64.AppImage!')
+    name: "SheepShaver x86_64"
     uses: ./.github/workflows/compile-platform.yml
     with:
-      platform: amd64
+      platform: x86_64
       target_stage: sheepshaver
   sheepshaver_i386:
-    if: contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!')
+    if: contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-i386.AppImage!')
     name: "SheepShaver i386"
     uses: ./.github/workflows/compile-platform.yml
     with:
@@ -55,12 +55,12 @@ jobs:
   reply:
     if: |
       always() && (
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-basilisk2.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-basilisk2.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-amd64-sheepshaver.AppImage!') ||
-      contains(github.event.comment.body, 'Hey build bot, please build macemu-i386-sheepshaver.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-x86_64.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build BasiliskII-i386.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-x86_64.AppImage!') ||
+      contains(github.event.comment.body, 'Hey build bot, please build SheepShaver-i386.AppImage!') ||
       contains(github.event.comment.body, 'Hey build bot, please build nothing!') )
-    needs: [gotcha, basilisk2_amd64, basilisk2_i386, sheepshaver_amd64, sheepshaver_i386]
+    needs: [gotcha, basilisk2_x86_64, basilisk2_i386, sheepshaver_x86_64, sheepshaver_i386]
     runs-on: ubuntu-latest
     steps:
     - name: Message success

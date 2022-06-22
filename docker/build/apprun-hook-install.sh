@@ -5,7 +5,6 @@
 	
 	if [ "${1:-nada}" = "--help" ]
 	then
-		echo "AppImage specific arguments (AppRun hook: apprun-hook-install.sh):"
 		echo "  --install"
 		echo "    Copy AppImage binary to home dir and create GUI menu entries."
 		echo "  --uninstall"
@@ -14,7 +13,6 @@
 		echo "    Create or update GUI menu entries, pointing to the current AppImage binary location."
 		echo "  --remove-menu-items"
 		echo "    Remove GUI menu entries."
-		echo
 		return
 	fi
 	

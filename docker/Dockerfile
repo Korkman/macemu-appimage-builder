@@ -40,7 +40,6 @@ ARG SKIP_VHD="n"
 ARG PACKAGING="linuxdeploy"
 ARG LXDEPLOY_ARCH=""
 
-
 # get some architecture "variables" going
 SHELL [ "/bin/bash", "-c" ]
 # copy only essential files from build directory (improves caching)
@@ -68,7 +67,6 @@ RUN [ "$SKIP_VHD" = y ] || make -j $(nproc)
 RUN [ "$SKIP_VHD" = y ] || DESTDIR=/usr/lib make install
 RUN [ "$SKIP_VHD" = y ] || cp /usr/local/src/xen/tools/blktap2/include/*.h /usr/local/include/
 
-
 # download linuxdeploy (AppImage builder)
 WORKDIR /usr/local/bin
 RUN [ "$PACKAGING" != "linuxdeploy" ] || wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${LXDEPLOY_ARCH}.AppImage -O linuxdeploy
@@ -80,9 +78,6 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	mv squashfs-root linuxdeploy.appdir && \
 	ln -s /usr/local/bin/linuxdeploy.appdir/AppRun /usr/local/bin/linuxdeploy \
 )
-
-
-
 
 # install SDL
 RUN apt-get -y --no-install-recommends install libsdl2-dev
@@ -107,10 +102,9 @@ RUN wget https://github.com/AppImage/pkg2appimage/raw/master/appdir-lint.sh -O a
 RUN wget https://github.com/AppImage/pkg2appimage/raw/master/excludelist -O excludelist
 RUN apt-get -y --no-install-recommends install desktop-file-utils libfile-mimeinfo-perl
 
-
 RUN mkdir /output
-
 WORKDIR /usr/local/src
+
 
 
 # local macemu source
@@ -119,11 +113,13 @@ COPY build/macemu /usr/local/src/macemu
 WORKDIR /usr/local/src/macemu
 
 
+
 # download macemu (BasiliskII and SheepShaver source)
 FROM buildenv AS buildenv-src-git
 ARG MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 RUN git clone $MACEMU_GIT_ARGS macemu
 WORKDIR /usr/local/src/macemu
+
 
 
 # basilisk2 thread
@@ -156,8 +152,14 @@ RUN strip BasiliskII
 RUN make install DESTDIR=AppDir
 
 # package BasiliskII
+WORKDIR /build
+COPY build/version-macemu-appimage-builder /build/
+COPY build/generate-version-files.sh /build/
+RUN /build/generate-version-files.sh
 
 WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
+
+RUN cp /build/version-* AppDir/usr/local/share/
 
 COPY build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/
 COPY build/BasiliskIIGUI.png      AppDir/usr/share/icons/
@@ -167,6 +169,7 @@ COPY build/BasiliskII.png     /build/BasiliskII.png
 COPY build/AppRun.sh          /build/AppRun.sh
 
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
+COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
@@ -197,13 +200,13 @@ RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /o
 
 
 
+# sheepshaver thread
 FROM buildenv-src-$MACEMU_SOURCE AS buildenv-sheepshaver
 ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
 ARG PACKAGING="linuxdeploy"
 
 # compile SheepShaver
-
 WORKDIR /usr/local/src/macemu/SheepShaver
 RUN make links
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
@@ -225,8 +228,14 @@ RUN strip SheepShaver
 RUN make install DESTDIR=AppDir
 
 # package SheepShaver
+WORKDIR /build
+COPY build/version-macemu-appimage-builder /build/
+COPY build/generate-version-files.sh /build/
+RUN /build/generate-version-files.sh
 
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
+
+RUN cp /build/version-* AppDir/usr/local/share/
 
 COPY build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/
 COPY build/SheepShaverGUI.png      AppDir/usr/share/icons/
@@ -236,6 +245,7 @@ COPY build/SheepShaver.png     /build/SheepShaver.png
 COPY build/AppRun.sh           /build/AppRun.sh
 
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
+COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/20-apprun-hook-mmap.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
@@ -266,12 +276,14 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /output/SheepShaver.AppDir.tar.gz AppDir)
 
 
-FROM buildenv-src-$MACEMU_SOURCE AS merge
-# merge outputs from builds
 
+# merge outputs from builds
+FROM buildenv-src-$MACEMU_SOURCE AS merge
 COPY --from=buildenv-sheepshaver /output /output
 COPY --from=buildenv-basilisk2 /output /output
 WORKDIR /usr/local/src/macemu
+
+
 
 # stripped down outputs
 FROM scratch AS basilisk2
@@ -285,6 +297,8 @@ FROM scratch AS combined
 COPY --from=buildenv-sheepshaver /output /
 COPY --from=buildenv-basilisk2 /output /
 
-FROM scratch AS nothing
+
+
 # dummy target to test gh actions
+FROM scratch AS nothing
 COPY build/BasiliskII.desktop /

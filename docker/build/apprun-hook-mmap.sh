@@ -16,14 +16,10 @@
 	
 	if [ "${1:-nada}" = "--help" ]
 	then
-		echo "AppImage specific arguments (AppRun hook: apprun-hook-mmap.sh):"
 		echo "  --mmap-visible-terminal"
 		echo "    (internally used only) Show mmap dialogs and exit."
-		echo
-		echo "AppImage environment variables (AppRun hook: apprun-hook-mmap.sh):"
-		echo "  skipMmapChecks=no"
+		echo "  skipMmapChecks=no (environment variable)"
 		echo "    Set to 'yes' to disable mmap checks."
-		echo
 		return
 	fi
 	

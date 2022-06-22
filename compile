@@ -6,17 +6,20 @@
 # usage examples:
 
 # build combined package for x86_64
-#   sudo ./compile x86_64
+#   ./compile x86_64
 # build BasiliskII package only, for x86_64
-#   sudo ./compile x86_64 basilisk2
+#   ./compile x86_64 basilisk2
+# locally hosted macemu source
+#   MACEMU_SOURCE=local ./compile x86_64
 # enter debug shell for the SheepShaver build environment in i386
-#   sudo ./compile i386 debug buildenv-sheepshaver
-#
+#   ./compile i386 debug buildenv-sheepshaver
+# quick debug shell for non-crashing build
+#   DOCKER_BUILDKIT=1 ./compile i386 debug buildenv-sheepshaver
 
 {
 	set -eu
 	set -o pipefail
-
+	
 	# must be root to control docker
 	if [ "$USER" != "root" ]
 	then
@@ -24,6 +27,11 @@
 		exit
 	fi
 	
+	SELF=$(readlink -f "$0")
+	HERE=${SELF%/*}
+	
+	cd "$HERE"
+
 	PLATFORM=${1:-}
 	LXDEPLOY_ARCH=""
 	PACKAGING="none"
@@ -91,6 +99,8 @@
 		;;
 	esac
 	
+	echo "$(git config --get remote.origin.url) @ $(git log -1 --format="%ad") ($(git rev-parse --short HEAD))" > docker/build/version-macemu-appimage-builder
+	
 	# prepare empty output directory
 	mkdir -p ./output
 	rm -rf ./output/*
@@ -109,6 +119,8 @@
 		sleep 2
 		
 		build_status=0
+		# DOCKER_BUILDKIT=1 not applied so we can enter last intermediate image
+		# NOTE: you can still prepend DOCKER_BUILDKIT=1 if you know the build succeeds to use your cache
 		docker build \
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \

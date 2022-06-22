@@ -6,31 +6,11 @@
 	HERE=${SELF%/*}
 	APPDIR=${SELF%/*}
 	
+	# add a blank line to separate AppImage help from product help
 	if [ "${1:-nada}" = "--help" ]
 	then
-		echo "AppImage specific arguments (standardized):"
-		echo "  see also https://docs.appimage.org/user-guide/run-appimages.html"
-		echo "  --appimage-mount"
-		echo "    Mount bundled content to a temporary location and output location."
-		echo "  --appimage-extract"
-		echo "    Extract bundled content to 'squashfs-root'"
-		echo 
-		echo "AppImage specific arguments (AppRun script):"
-		echo "  --sdlrender software"
-		echo "    Use '--sdlrender auto' to re-enable default behavior"
-		echo "    (use opengl if available)."
-		echo
-		echo "AppImage environment variables (AppRun script):"
-		echo "  APP_GTK_THEME=yes"
-		echo "    Set to 'no' to try and use native GTK theme instead of bundled."
-		echo "    Or set to any bundled theme name: "
-		echo "    $(ls -m "$HERE/usr/share/themes")"
-		echo
-		echo "  pauseAfterExecution=no"
-		echo "    Set to 'yes' to pause after execution."
 		echo
 	fi
-	
 	
 	export PATH="${HERE}/usr/local/bin/:${HERE}/usr/local/sbin/:${HERE}/usr/bin/:${HERE}/usr/sbin/:${HERE}/usr/games/:${HERE}/bin/:${HERE}/sbin/${PATH:+:$PATH}"
 	export LD_LIBRARY_PATH="${HERE}/usr/lib/:${HERE}/lib/${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"

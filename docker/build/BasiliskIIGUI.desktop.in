@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=%APP_NAME%-GUI
+Comment=A GUI for the open source Macintosh II Emulator
+Icon=%ICON_NAME%.gui
+Exec=%EXEC_NAME% --nogui false
+Terminal=false
+StartupNotify=false
+Categories=Emulator;System;

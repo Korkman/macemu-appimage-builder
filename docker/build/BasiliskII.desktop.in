@@ -1,18 +1,18 @@
 [Desktop Entry]
 Type=Application
-Name=BasiliskII
+Name=%APP_NAME%
 Comment=Open source classic 68k Mac OS emulator
-Icon=BasiliskII
-Exec=BasiliskII
+Icon=%ICON_NAME%
+Exec=%EXEC_NAME%
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;
 Actions=new-window;launch-settings;
 
 [Desktop Action new-window]
-Name=Start BasiliskII
-Exec=BasiliskII --nogui true
+Name=Start %APP_NAME%
+Exec=%EXEC_NAME% --nogui true
 
 [Desktop Action launch-settings]
 Name=Settings
-Exec=BasiliskII --nogui false
+Exec=%EXEC_NAME% --nogui false

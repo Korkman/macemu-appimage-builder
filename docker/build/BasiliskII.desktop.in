@@ -4,6 +4,7 @@ Name=%APP_NAME%
 Comment=Open source classic 68k Mac OS emulator
 Icon=%ICON_NAME%
 Exec=%EXEC_NAME%
+Path=%EXEC_PATH%
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;

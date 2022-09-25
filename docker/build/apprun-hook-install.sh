@@ -31,6 +31,7 @@
 	SELF=$(readlink -f "$0")
 	HERE=${SELF%/*}
 	APPDIR=${SELF%/*}
+	EXEC_PATH="$(dirname "$APPIMAGE")"
 	METAPREFIX="com.github.korkman.macemu"
 	if [ -e "$HERE/BasiliskII.desktop" ]
 	then
@@ -136,6 +137,7 @@
 		
 		cat "$HERE/${PRODUCT}GUI.desktop.in" | sed "
 			s|%EXEC_NAME%|$APPIMAGE|;
+			s|%EXEC_PATH%|$EXEC_PATH|;
 			s|%APP_NAME%|${PRODUCT}|;
 			s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|
 		" > $appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop
@@ -157,6 +159,7 @@
 		
 		cat "$HERE/${PRODUCT}.desktop.in" | sed "
 			s|%EXEC_NAME%|$APPIMAGE|;
+			s|%EXEC_PATH%|$EXEC_PATH|;
 			s|%APP_NAME%|${PRODUCT}|;
 			s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|
 		" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop

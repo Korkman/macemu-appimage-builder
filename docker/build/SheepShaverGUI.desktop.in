@@ -4,6 +4,7 @@ Name=%APP_NAME% (force settings)
 Comment=A GUI for the open source PowerPC Mac OS Emulator
 Icon=%ICON_NAME%.gui
 Exec=%EXEC_NAME% --nogui false
+Path=%EXEC_PATH%
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;

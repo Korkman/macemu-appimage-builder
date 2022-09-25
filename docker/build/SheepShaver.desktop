@@ -7,12 +7,16 @@ Exec=SheepShaver
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;
-Actions=new-window;launch-settings;
+Actions=launch-skip-settings;launch-force-settings;launch-opengl;
 
-[Desktop Action new-window]
-Name=Start SheepShaver
+[Desktop Action launch-skip-settings]
+Name=Start SheepShaver (skip settings)
 Exec=SheepShaver --nogui true
 
-[Desktop Action launch-settings]
-Name=Settings
+[Desktop Action launch-force-settings]
+Name=Start SheepShaver (force settings)
 Exec=SheepShaver --nogui false
+
+[Desktop Action launch-opengl]
+Name=Start SheepShaver (opengl)
+Exec=SheepShaver --sdlrender opengl

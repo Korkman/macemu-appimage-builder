@@ -13,20 +13,27 @@ Using the SheepShaver AppImage file as an example, either use your preferred fil
 chmod +x ./SheepShaver-x86_64.AppImage
 ```
 
-### Installing with the integrated installer (optional)
+### Installing with the integrated installer (optional, recommended)
 The best way to install is with the integrated installer. Open a terminal and run:
 ```
 ./SheepShaver-x86_64.AppImage --install
 ```
 
-The AppImage will be copied to `$HOME/.local/bin/`[^1] and two menu items will be created: one forcing startup without and one with GUI.
+The AppImage will be copied to `$HOME/.local/bin/`[^1] and a menu item will be created. Besides the default startup which will read the "nogui" setting from your config file, two more actions will be available in the context menu: one skipping and one forcing the settings GUI to show.
 
-### Creating menu items without installing
+### Creating a menu item without installing (optional)
 Open a terminal, run
 ```
-./SheepShaver-x86_64.AppImage --add-menu-items
+./SheepShaver-x86_64.AppImage --add-menu-item
 ```
-The menu items will be placed in the "System" group and will point to the current location of the AppImage. You may have to log out and log in for the menu entries to appear. After changing the AppImage location just run the command again to update the menu items.
+The menu item will be placed in the "System" group and will point to the current location of the AppImage. You may have to log out and log in for the menu entries to appear. Whenever moving the AppImage just run the command again to update the menu item.
+
+### Separate menu item for forced GUI startup (optional)
+If you prefer having a dedicated menu item for the settings GUI, run
+```
+./SheepShaver-x86_64.AppImage --add-settings-menu-item
+```
+
 
 ### Uninstalling, removing menu items
 ```
@@ -34,12 +41,28 @@ The menu items will be placed in the "System" group and will point to the curren
 ./SheepShaver-x86_64.AppImage --uninstall
 ```
 
-### Managed installation with AppImage Launcher (not recommended)
-AppImage Launcher is a tool to manage AppImage installations in a unified and integrated way. Unfortunately this means a single menu item per AppImage, which works okay for SheepShaver and BasiliskII, but is not ideal. The dedicated non-GUI menu item is important for advanced users who edit and comment their prefs file which would be overwritten by the GUI starter. You can still get them after AppImage Launcher relocated the AppImage. Simply start with `--add-menu-items` at the new location (usually in `$HOME/Applications`).
+### Managed installation with AppImageLauncher (not recommended)
+AppImageLauncher is a tool to manage AppImages in a unified and integrated way. Unfortunately custom context menu actions are currently unsupported which is not ideal. You can add an extra "forced settings" menu item after AppImageLauncher relocated the AppImage (default location assumed):
+```
+$HOME/Applications/SheepShaver_*.AppImage --add-settings-menu-item
+```
+
+
 
 ### Configuration
 
-Guides for setting up SheepShaver and Basilisk II are available on the excellent [E-Maculation Wiki](https://www.emaculation.com/doku.php/sheepshaver_basiliskii_linux) and their [forum](https://www.emaculation.com/forum/) provides additional help.
+Guides for setting up SheepShaver and Basilisk II are available on the excellent [E-Maculation Wiki](https://www.emaculation.com/doku.php/sheepshaver_basiliskii_linux) and their [forum](https://www.emaculation.com/forum/) provides additional help. Adding
+```
+nogui true
+```
+to your .sheepshaver_prefs / .basilisk_ii_prefs is highly recommended so the settings GUI is skipped by default.
+
+### Multiple installations
+Multiple installations are possible, see [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html). The menu item installers will create and update only one instance, though, to keep things simple for users who move their single installation around and want to update the menu items. Copying and editing the menu item files is easy. Explore:
+```
+$HOME/.local/share/applications/com.github.korkman.macemu.SheepShaver.desktop
+```
+
 
 ### CLI help and version information
 ```
@@ -54,9 +77,7 @@ The AppImage specific help is output before SheepShaver's. The --version flag wi
 Download your favorite startup chime in WAVE format and name it startup.wav to have it play on startup. Place it into the same directory where the AppImages are located.
 
 ### Where will preferences be saved?
-".sheepshaver_prefs", ".basilisk_ii_prefs" in your home directory . Unless…
-
-…you create directories named `SheepShaver-x86_64.AppImage.home` and `BasiliskII-x86_64.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
+".sheepshaver_prefs", ".basilisk_ii_prefs" in your home directory . Unless you create directories named `SheepShaver-x86_64.AppImage.home` and `BasiliskII-x86_64.AppImage.home` within the same directory as the AppImages. See [AppImage portable mode](https://docs.appimage.org/user-guide/portable-mode.html).
 
 ### What is a "keycodes" file?
 If you use an international keyboard, you need a "keycodes" file like the one you can [download here](https://raw.githubusercontent.com/Korkman/macemu-appimage-builder/main/keycodes). Place it along with your virtual disks, in your home directory - anywhere. The location has to be referenced in the prefs.
@@ -69,7 +90,7 @@ The contained executable script "AppRun" will run the application.
 
 ### Anything else I should know about the AppImage builds?
 * The integrated scripts will inform about and try to handle low mmap addressing policies which would prevent SheepShaver from starting.
-* The option "sdlrender" is currently set to "software" to maximize compatibility. You can change this by editing the .desktop files in `~/.local/share/applications` and appending `--sdlrender opengl`. Do not expect much of a difference in performance.
+* The option "sdlrender" is currently set to "software" to maximize compatibility. You can launch with opengl rendering from the menu item context menu. Do not expect much of a difference in performance.
 
 ## Building your own
 
@@ -78,9 +99,9 @@ The contained executable script "AppRun" will run the application.
 * Docker
 * qemu-user with binfmt support for cross architecture builds
   <br>(for Debian: `apt-get install qemu-user-static`)
-* AppImage Launcher NOT installed ([interferes](https://github.com/TheAssassin/AppImageLauncher/issues/407) with running AppImages inside Docker)
+* AppImageLauncher NOT installed ([interferes](https://github.com/TheAssassin/AppImageLauncher/issues/407) with running AppImages inside Docker)
 
-If you don't meet the prerequisites the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/docker/Dockerfile), might still be of help.
+If you don't meet the prerequisites, the [Dockerfile](https://github.com/Korkman/macemu-appimage-builder/blob/main/docker/Dockerfile) might still be of help.
 
 ### Compile
 ```

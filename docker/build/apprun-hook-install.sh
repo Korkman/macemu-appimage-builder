@@ -9,22 +9,25 @@
 		echo "    Copy AppImage binary to home dir and create GUI menu entries."
 		echo "  --uninstall"
 		echo "    Remove GUI menu entries and delete AppImage binary."
-		echo "  --add-menu-items"
-		echo "    Create or update GUI menu entries, pointing to the current AppImage binary location."
-		echo "	--add-menu-item"
-		echo "		Create a single GUI menu entry with multiple launch options."
+		echo "  --add-menu-item (default on --install)"
+		echo "    Create a single GUI menu entry with multiple launch options."
+		echo "  --add-settings-menu-item"
+		echo "    Create a dedicated 'force settings' GUI menu item."
 		echo "  --remove-menu-items"
 		echo "    Remove GUI menu entries."
 		return
 	fi
 	
 	# quick return if no recognized argument is present
-	if [ "${1:-}" != "--install" ] && [ "${1:-}" != "--uninstall" ] && [ "${1:-}" != "--add-menu-item" ] && [ "${1:-}" != "--add-menu-items" ] && [ "${1:-}" != "--remove-menu-items" ]
+	if [ "${1:-}" != "--install" ] \
+		&& [ "${1:-}" != "--uninstall" ] \
+		&& [ "${1:-}" != "--add-menu-item" ] \
+		&& [ "${1:-}" != "--add-settings-menu-item" ] \
+		&& [ "${1:-}" != "--remove-menu-items" ]
 	then
 		return
 	fi
 	
-	APPIMAGE="/home/rob/Apps/SheepShaver/SheepShaver-x86_64.AppImage"
 	SELF=$(readlink -f "$0")
 	HERE=${SELF%/*}
 	APPDIR=${SELF%/*}
@@ -81,18 +84,21 @@
 		else
 			echo "Already placed at destination $destFile"
 		fi
-		"$destFile" --add-menu-items
+		# remove previously default separate menu items to install a single item
+		"$destFile" --remove-menu-items
+		"$destFile" --add-menu-item
 		
 		if [ "$destFile" != "$APPIMAGE" ]
 		then
-			echo "Delete original file $APPIMAGE? (Y/n)"
+			echo "Delete installer? (Y/n)"
 			read -r REPLY
 			if [ "$REPLY" != "Y" ] && [ "$REPLY" != "y" ] && [ "$REPLY" != "" ]
 			then
-				echo "Original file kept."
-				exit
+				echo "Installer file kept."
+			else
+				# NOTE: attempts to decouple rm so it works under all circumstances failed
+				rm -f "$APPIMAGE" || echo -e "Could not delete self, please execute:\nrm \"$APPIMAGE\""
 			fi
-			rm -f "$APPIMAGE"
 		fi
 		
 		exit
@@ -117,41 +123,43 @@
 		exit
 	fi
 	
-	if [ "${1:-}" = "--add-menu-items" ]
+	if [ "${1:-}" = "--add-settings-menu-item" ]
 	then
-		printf "Adding menu items ..."
+		printf "Adding settings GUI menu item ..."
 		mkdir -p "$iconsDir"
 		mkdir -p "$appsDir"
 		
-		# TODO: should we support multiple parallel installations?
-		
 		# install icon
-		cat "$HERE/${PRODUCT}.png" > "$iconsDir/${METAPREFIX}.${PRODUCT}.png"
 		cat "$HERE/usr/share/icons/${PRODUCT}GUI.png" > "$iconsDir/${METAPREFIX}.${PRODUCT}.gui.png"
 		
 		# install desktop file, patch execution path
 		
-		cat "$HERE/${PRODUCT}.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop
-		cat "$HERE/${PRODUCT}GUI.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop
+		cat "$HERE/${PRODUCT}GUI.desktop.in" | sed "
+			s|%EXEC_NAME%|$APPIMAGE|;
+			s|%APP_NAME%|${PRODUCT}|;
+			s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|
+		" > $appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop
 		
 		echo " done."
 		exit
 	fi
 	
-		if [ "${1:-}" = "--add-menu-item" ]
+	if [ "${1:-}" = "--add-menu-item" ]
 	then
 		printf "Adding menu item ..."
 		mkdir -p "$iconsDir"
 		mkdir -p "$appsDir"
-		
-		# TODO: should we support multiple parallel installations?
 		
 		# install icon
 		cat "$HERE/${PRODUCT}.png" > "$iconsDir/${METAPREFIX}.${PRODUCT}.png"
 		
 		# install desktop file, patch execution path
 		
-		cat "$HERE/${PRODUCT}.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop
+		cat "$HERE/${PRODUCT}.desktop.in" | sed "
+			s|%EXEC_NAME%|$APPIMAGE|;
+			s|%APP_NAME%|${PRODUCT}|;
+			s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|
+		" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop
 		
 		echo " done."
 		exit

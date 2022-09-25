@@ -161,12 +161,16 @@ WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 
 RUN cp /build/version-* AppDir/usr/local/share/
 
-COPY build/BasiliskII.appdata.xml AppDir/usr/share/metainfo/
-COPY build/BasiliskIIGUI.png      AppDir/usr/share/icons/
+# base build files referenced in linuxdeploy
 COPY build/bundle-gtk2.sh     /build/bundle-gtk2.sh
 COPY build/BasiliskII.desktop /build/BasiliskII.desktop
 COPY build/BasiliskII.png     /build/BasiliskII.png
 COPY build/AppRun.sh          /build/AppRun.sh
+# extra files added to AppDir
+COPY build/BasiliskII.appdata.xml    AppDir/usr/share/metainfo/
+COPY build/BasiliskIIGUI.png         AppDir/usr/share/icons/
+COPY build/BasiliskII.desktop.in     AppDir/BasiliskII.desktop.in
+COPY build/BasiliskIIGUI.desktop.in  AppDir/BasiliskIIGUI.desktop.in
 
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
@@ -237,12 +241,16 @@ WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
 
 RUN cp /build/version-* AppDir/usr/local/share/
 
-COPY build/SheepShaver.appdata.xml AppDir/usr/share/metainfo/
-COPY build/SheepShaverGUI.png      AppDir/usr/share/icons/
+# base build files referenced in linuxdeploy
 COPY build/bundle-gtk2.sh      /build/bundle-gtk2.sh
 COPY build/SheepShaver.desktop /build/SheepShaver.desktop
 COPY build/SheepShaver.png     /build/SheepShaver.png
 COPY build/AppRun.sh           /build/AppRun.sh
+# extra files added to AppDir
+COPY build/SheepShaver.appdata.xml   AppDir/usr/share/metainfo/
+COPY build/SheepShaverGUI.png        AppDir/usr/share/icons/
+COPY build/SheepShaver.desktop.in    AppDir/SheepShaver.desktop.in
+COPY build/SheepShaverGUI.desktop.in AppDir/SheepShaverGUI.desktop.in
 
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh

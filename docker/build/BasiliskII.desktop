@@ -7,12 +7,16 @@ Exec=BasiliskII
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;
-Actions=new-window;launch-settings;
+Actions=launch-skip-settings;launch-force-settings;launch-opengl;
 
-[Desktop Action new-window]
-Name=Start BasiliskII
+[Desktop Action launch-skip-settings]
+Name=Start BasiliskII (skip settings)
 Exec=BasiliskII --nogui true
 
-[Desktop Action launch-settings]
-Name=Settings
+[Desktop Action launch-force-settings]
+Name=Start BasiliskII (force settings)
 Exec=BasiliskII --nogui false
+
+[Desktop Action launch-opengl]
+Name=Start BasiliskII (opengl)
+Exec=BasiliskII --sdlrender opengl

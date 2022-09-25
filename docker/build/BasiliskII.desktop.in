@@ -7,12 +7,16 @@ Exec=%EXEC_NAME%
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;
-Actions=new-window;launch-settings;
+Actions=launch-skip-settings;launch-force-settings;launch-opengl;
 
-[Desktop Action new-window]
-Name=Start %APP_NAME%
+[Desktop Action launch-skip-settings]
+Name=Start %APP_NAME% (skip settings)
 Exec=%EXEC_NAME% --nogui true
 
-[Desktop Action launch-settings]
-Name=Settings
+[Desktop Action launch-force-settings]
+Name=Start %APP_NAME% (force settings)
 Exec=%EXEC_NAME% --nogui false
+
+[Desktop Action launch-opengl]
+Name=Start %APP_NAME% (opengl)
+Exec=%EXEC_NAME% --sdlrender opengl

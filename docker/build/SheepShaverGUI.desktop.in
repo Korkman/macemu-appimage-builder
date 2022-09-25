@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=%APP_NAME%-GUI
+Name=%APP_NAME% (force settings)
 Comment=A GUI for the open source PowerPC Mac OS Emulator
 Icon=%ICON_NAME%.gui
-Exec=%EXEC_NAME% --nogui true
+Exec=%EXEC_NAME% --nogui false
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;

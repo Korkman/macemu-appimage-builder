@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=%APP_NAME%-GUI
+Name=%APP_NAME% (force settings)
 Comment=A GUI for the open source Macintosh II Emulator
 Icon=%ICON_NAME%.gui
 Exec=%EXEC_NAME% --nogui false

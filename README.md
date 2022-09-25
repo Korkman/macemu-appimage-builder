@@ -42,12 +42,10 @@ If you prefer having a dedicated menu item for the settings GUI, run
 ```
 
 ### Managed installation with AppImageLauncher (not recommended)
-AppImageLauncher is a tool to manage AppImages in a unified and integrated way. Unfortunately custom context menu actions are currently unsupported which is not ideal. You can add an extra "forced settings" menu item after AppImageLauncher relocated the AppImage (default location assumed):
+AppImageLauncher is a tool to manage AppImages in a unified and integrated way. After installation, launching any AppImage will prompt whether to move the AppImage to a central location and integrate it in the desktop menu. Custom menu item actions are unsupported in older versions. If you need the "forced settings" option, upgrade to a more recent AppImageLauncher version or add an extra menu item after AppImageLauncher relocated the AppImage (default location assumed):
 ```
 $HOME/Applications/SheepShaver_*.AppImage --add-settings-menu-item
 ```
-
-
 
 ### Configuration
 

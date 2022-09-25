@@ -11,17 +11,20 @@
 		echo "    Remove GUI menu entries and delete AppImage binary."
 		echo "  --add-menu-items"
 		echo "    Create or update GUI menu entries, pointing to the current AppImage binary location."
+		echo "	--add-menu-item"
+		echo "		Create a single GUI menu entry with multiple launch options."
 		echo "  --remove-menu-items"
 		echo "    Remove GUI menu entries."
 		return
 	fi
 	
 	# quick return if no recognized argument is present
-	if [ "${1:-}" != "--install" ] && [ "${1:-}" != "--uninstall" ] && [ "${1:-}" != "--add-menu-items" ] && [ "${1:-}" != "--remove-menu-items" ]
+	if [ "${1:-}" != "--install" ] && [ "${1:-}" != "--uninstall" ] && [ "${1:-}" != "--add-menu-item" ] && [ "${1:-}" != "--add-menu-items" ] && [ "${1:-}" != "--remove-menu-items" ]
 	then
 		return
 	fi
 	
+	APPIMAGE="/home/rob/Apps/SheepShaver/SheepShaver-x86_64.AppImage"
 	SELF=$(readlink -f "$0")
 	HERE=${SELF%/*}
 	APPDIR=${SELF%/*}
@@ -127,19 +130,28 @@
 		cat "$HERE/usr/share/icons/${PRODUCT}GUI.png" > "$iconsDir/${METAPREFIX}.${PRODUCT}.gui.png"
 		
 		# install desktop file, patch execution path
-		grep -Ev '^(Name|Icon|Exec)=.*' "$HERE/${PRODUCT}.desktop" > "$appsDir/${METAPREFIX}.${PRODUCT}.desktop"
-		{
-			echo "Exec=$APPIMAGE --nogui true";
-			echo "Icon=${METAPREFIX}.${PRODUCT}.png";
-			echo "Name=${PRODUCT}";
-		} >> "$appsDir/${METAPREFIX}.${PRODUCT}.desktop"
 		
-		grep -Ev '^(Name|Icon|Exec)=.*' "$HERE/${PRODUCT}.desktop" > "$appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop"
-		{
-			echo "Exec=$APPIMAGE --nogui false"
-			echo "Icon=${METAPREFIX}.${PRODUCT}.gui.png"
-			echo "Name=${PRODUCT}GUI"
-		} >> "$appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop"
+		cat "$HERE/${PRODUCT}.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop
+		cat "$HERE/${PRODUCT}GUI.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop
+		
+		echo " done."
+		exit
+	fi
+	
+		if [ "${1:-}" = "--add-menu-item" ]
+	then
+		printf "Adding menu item ..."
+		mkdir -p "$iconsDir"
+		mkdir -p "$appsDir"
+		
+		# TODO: should we support multiple parallel installations?
+		
+		# install icon
+		cat "$HERE/${PRODUCT}.png" > "$iconsDir/${METAPREFIX}.${PRODUCT}.png"
+		
+		# install desktop file, patch execution path
+		
+		cat "$HERE/${PRODUCT}.desktop" | sed "s|%EXEC_NAME%|$APPIMAGE|" | sed "s|%APP_NAME%|${PRODUCT}|" | sed "s|%ICON_NAME%|${METAPREFIX}.${PRODUCT}|" > $appsDir/${METAPREFIX}.${PRODUCT}.desktop
 		
 		echo " done."
 		exit
@@ -151,6 +163,7 @@
 		rm -f "$appsDir/${METAPREFIX}.${PRODUCT}.desktop" || echo "Desktop file did not exist"
 		rm -f "$appsDir/${METAPREFIX}.${PRODUCT}.gui.desktop" || echo "Desktop file did not exist (GUI)"
 		rm -f "$iconsDir/${METAPREFIX}.${PRODUCT}.png" || echo "Icon did not exist"
+		rm -f "$iconsDir/${METAPREFIX}.${PRODUCT}.gui.png" || echo "Icon did not exist (GUI)"
 		echo " done."
 		exit
 	fi

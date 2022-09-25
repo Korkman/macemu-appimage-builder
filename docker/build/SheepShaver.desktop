@@ -1,9 +1,18 @@
 [Desktop Entry]
 Type=Application
 Name=SheepShaver
-Comment="Open source classic PowerPC Mac OS emulator"
+Comment=Open source classic PowerPC Mac OS emulator
 Icon=SheepShaver
 Exec=SheepShaver
 Terminal=false
 StartupNotify=false
 Categories=Emulator;System;
+Actions=new-window;launch-settings;
+
+[Desktop Action new-window]
+Name=Start SheepShaver
+Exec=SheepShaver --nogui true
+
+[Desktop Action launch-settings]
+Name=Settings
+Exec=SheepShaver --nogui false

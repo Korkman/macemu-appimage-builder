@@ -124,8 +124,9 @@ https://wiki.debian.org/mmap_min_addr
 			exit 1
 		fi
 	fi
-	# sysctl
-	if [ "$(/usr/sbin/sysctl --values vm.mmap_min_addr)" != "0" ]
+	
+	# test if low mmap is allowed, take action if not
+	if [ "$(cat /proc/sys/vm/mmap_min_addr)" != "0" ]
 	then
 		if [ "$mmapVisibleTerminal" != "yes" ]
 		then
@@ -143,7 +144,7 @@ For a permanent change (not recommended), run
 For information about the security impact, see
 https://wiki.debian.org/mmap_min_addr
 "
-			if ! sudo sysctl vm.mmap_min_addr=0 > /dev/null
+			if ! sudo sh -c "echo 0 > /proc/sys/vm/mmap_min_addr"
 			then
 				echo "Failed. SheepShaver will probably crash."
 				echo "Press enter to continue ..."; read -r enter

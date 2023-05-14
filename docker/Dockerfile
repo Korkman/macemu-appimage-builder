@@ -28,6 +28,11 @@ RUN apt-get -y --no-install-recommends install \
 	gettext build-essential git make cmake autoconf automake libtool pkg-config \
 ;
 
+RUN apt-get -y --no-install-recommends install \
+	# fixes: https://github.com/Korkman/macemu-appimage-builder/issues/18 \
+	libthai0 \
+;
+
 # libsdl2-dev 
 #	# for appimage \
 #	fuse3 libfuse2 \
@@ -184,6 +189,8 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.0 \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libatk-bridge.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \
@@ -265,6 +272,8 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.0 \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libatk-bridge.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \

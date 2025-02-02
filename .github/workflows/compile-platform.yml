@@ -38,7 +38,7 @@ jobs:
         run: tar -czvf macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz macemu
       
       - name: Save artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz

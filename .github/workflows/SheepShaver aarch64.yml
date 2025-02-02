@@ -1,0 +1,20 @@
+name: SheepShaver aarch64
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    # run this every month on the second monday at 7:20'o clock UTC
+    #- cron:  '20 7 8-14 * 1'
+    # run this every friday at 13:37 UTC
+    - cron:  '37 13 * * 5'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  compile-and-release:
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: aarch64
+      target_stage: sheepshaver
+      runner: ubuntu-24.04-arm

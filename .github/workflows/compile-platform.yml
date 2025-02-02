@@ -14,13 +14,18 @@ on:
         required: true
         default: "combined"
         type: string
+      runner:
+        description: "Runner, specify ubuntu-24.04-arm for aarch64"
+        required: false
+        default: "ubuntu-latest"
+        type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

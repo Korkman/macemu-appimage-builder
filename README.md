@@ -1,10 +1,17 @@
 # macemu-appimage-builder
-[![BasiliskII x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml) [![SheepShaver x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml) [![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml) [![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
+
+[![SheepShaver i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20i386.yml)
+[![SheepShaver x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20x86_64.yml)
+[![SheepShaver aarch64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20aarch64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/SheepShaver%20aarch64.yml)
+
+[![BasiliskII i386](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20i386.yml)
+[![BasiliskII x86_64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20x86_64.yml)
+[![BasiliskII aarch64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20aarch64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20aarch64.yml)
 
 Builds the popular classic Macintosh emulators BasiliskII (68k Macs) and SheepShaver (PowerPC Macs)
-from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit and 64-bit x86 Linux and creates AppImages which run instantly on many Linux desktops.
+from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit x86, 64-bit x86 and 64-bit ARM Linux and creates AppImages which run instantly on many Linux desktops.
 
-## Attention: Linux Kernel 6.5.x series
+## Attention: Linux Kernel 6.5.x series on x86
 Some users of Linux Kernel series 6.5.x may find the required sysctl mmap setting ineffective, rendering SheepShaver unusable. Your distro may have patched the Kernel to address the issue, so updating to the latest patch version is worth a try. If that doesn't help, update to a more recent Kernel (6.6.0 and up) or downgrade to an older one (6.5.0 or lower), in any way your distro supports this.
 
 ## Usage
@@ -90,7 +97,7 @@ If you don't have FUSE available, you can extract the contained files with the s
 The contained executable script "AppRun" will run the application.
 
 ### Anything else I should know about the AppImage builds?
-* The integrated scripts will inform about and try to handle low mmap addressing policies which would prevent SheepShaver from starting.
+* (x86 only) The integrated scripts will inform about and try to handle low mmap addressing policies which would prevent SheepShaver from starting.
 * The option "sdlrender" is currently set to "software" to maximize compatibility. You can launch with opengl rendering from the menu item context menu. Do not expect much of a difference in performance.
 
 ## Building your own

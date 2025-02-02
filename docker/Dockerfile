@@ -33,6 +33,11 @@ RUN apt-get -y --no-install-recommends install \
 	libthai0 \
 ;
 
+RUN apt-get -y --no-install-recommends install \
+	# required to build bII on arm64
+	libmpfr-dev \
+;
+
 # libsdl2-dev 
 #	# for appimage \
 #	fuse3 libfuse2 \
@@ -215,6 +220,7 @@ RUN [ "$PACKAGING" != "tarball" ] || (echo "Packaging as tarball" && tar -czf /o
 FROM buildenv-src-$MACEMU_SOURCE AS buildenv-sheepshaver
 ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
+ARG SKIP_NATMEM="y"
 ARG PACKAGING="linuxdeploy"
 
 # compile SheepShaver
@@ -230,6 +236,7 @@ RUN  \
 	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \
 	--without-esd \
+	$([ "$SKIP_NATMEM" = y ] && echo -n "" || echo -n "--enable-addressing=direct,0x10000000") \
 ;
 
 #	--enable-standalone-gui \ # combining the standalone gui with bincue breaks the build
@@ -263,6 +270,7 @@ RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/20-apprun-hook-mmap.sh
+RUN if [ "$SKIP_NATMEM" = n ]; then rm AppDir/apprun-hooks/20-apprun-hook-mmap.sh; fi
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
 	--desktop-file=/build/SheepShaver.desktop \

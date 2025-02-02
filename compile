@@ -37,6 +37,7 @@
 	PACKAGING="none"
 	SKIP_VHD="y"
 	SKIP_BINCUE="n"
+	SKIP_NATMEM="y"
 	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 	case "${PLATFORM}" in
@@ -46,6 +47,7 @@
 			DOCKER_PLATFORM="linux/x86-64"
 			DISTRO="ubuntu:bionic"
 			SKIP_VHD="n"
+			SKIP_NATMEM="y"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="x86_64"
 		;;
@@ -54,12 +56,13 @@
 			DOCKER_SUFFIX="i386"
 			DOCKER_PLATFORM="linux/386"
 			DISTRO="ubuntu:bionic"
-			SKIP_VHD="y"
+			SKIP_VHD="y" # does not compile on i386 as of 2025-02-02
+			SKIP_NATMEM="y"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="i386"
 		;;
 		"pi1"|"pi0")
-			echo "Building Rasperry ${PLATFORM} (pi1, pi0) [EXPERIMENTAL]"
+			echo "Building Raspberry ${PLATFORM} (pi1, pi0) [EXPERIMENTAL]"
 			echo "WARNING: SheepShaver is known not to build on this platform"
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi1"
@@ -76,22 +79,23 @@
 			#DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
 		;;
 		"pi3"|"pi4"|"pi0v2")
-			echo "Building Rasperry ${PLATFORM} (pi3, pi4, pi0v2) [EXPERIMENTAL]"
+			echo "Building Raspberry ${PLATFORM} (pi3, pi4, pi0v2) [EXPERIMENTAL]"
 			echo "WARNING: SheepShaver is known not to build on this platform"
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi3"
 			DOCKER_PLATFORM="linux/arm/v7"
 			DISTRO="balenalib/raspberrypi3-ubuntu:bionic-build"
 		;;
-		"pi4-64")
-			echo "Building Rasperry ${PLATFORM} (raspberrypi4 64-bit) [EXPERIMENTAL]"
-			echo "WARNING: SheepShaver is known not to build on this platform"
-			echo "WARNING: No packager available for this platform"
-			DOCKER_SUFFIX="pi4-64"
+		"aarch64")
+			echo "Building ${PLATFORM} "
+			DOCKER_SUFFIX="aarch64"
 			DOCKER_PLATFORM="linux/arm64"
 			DISTRO="balenalib/raspberrypi4-64-ubuntu:bionic-build"
-			#DISTRO="debian:bullseye"
 			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
+			PACKAGING="linuxdeploy"
+			LXDEPLOY_ARCH="aarch64"
+			SKIP_VHD="y" # vhd support switches addressing to banks, which may affect performance
+			SKIP_NATMEM="n" # NATMEM is required for sheepshaver on aarch64
 		;;
 		*)
 			echo "Invalid build platform specified: ${1}"
@@ -125,6 +129,7 @@
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \
 			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SKIP_NATMEM=$SKIP_NATMEM \
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \
 			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \
@@ -168,6 +173,7 @@
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \
 			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SKIP_NATMEM=$SKIP_NATMEM \
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \
 			--build-arg LXDEPLOY_ARCH=$LXDEPLOY_ARCH \

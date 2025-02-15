@@ -91,6 +91,7 @@
 			DOCKER_SUFFIX="aarch64"
 			DOCKER_PLATFORM="linux/arm64"
 			DISTRO="balenalib/raspberrypi4-64-ubuntu:bionic-build"
+			#DISTRO="balenalib/aarch64-ubuntu:bionic-build"
 			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="aarch64"

@@ -9,7 +9,7 @@
 [![BasiliskII aarch64](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20aarch64.yml/badge.svg)](https://github.com/Korkman/macemu-appimage-builder/actions/workflows/BasiliskII%20aarch64.yml)
 
 Builds the popular classic Macintosh emulators BasiliskII (68k Macs) and SheepShaver (PowerPC Macs)
-from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-bit x86, 64-bit x86 and 64-bit ARM Linux and creates AppImages which run instantly on many Linux desktops.
+from source ([kanjitalk755's repo](https://github.com/kanjitalk755/macemu)) for 32-/64-bit x86 and 64-bit ARM Linux and creates AppImages which run instantly on many Linux desktops.
 
 ## Attention: Linux Kernel 6.5.x series on x86
 Some users of Linux Kernel series 6.5.x may find the required sysctl mmap setting ineffective, rendering SheepShaver unusable. Your distro may have patched the Kernel to address the issue, so updating to the latest patch version is worth a try. If that doesn't help, update to a more recent Kernel (6.6.0 and up) or downgrade to an older one (6.5.0 or lower), in any way your distro supports this.

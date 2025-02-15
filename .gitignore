@@ -3,3 +3,4 @@ compile.log
 squashfs-root/*
 strace.log
 docker/build/version-macemu-appimage-builder
+docker/build/macemu

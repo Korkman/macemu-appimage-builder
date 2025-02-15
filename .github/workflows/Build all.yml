@@ -18,6 +18,13 @@ jobs:
     with:
       platform: i386
       target_stage: basilisk2
+  basilisk2_aarch64:
+    name: "BasiliskII aarch64"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: aarch64
+      target_stage: basilisk2
+      runner: ubuntu-24.04-arm
   sheepshaver_x86_64:
     name: "SheepShaver x86_64"
     uses: ./.github/workflows/compile-platform.yml
@@ -30,3 +37,10 @@ jobs:
     with:
       platform: i386
       target_stage: sheepshaver
+  sheepshaver_aarch64:
+    name: "SheepShaver aarch64"
+    uses: ./.github/workflows/compile-platform.yml
+    with:
+      platform: aarch64
+      target_stage: sheepshaver
+      runner: ubuntu-24.04-arm

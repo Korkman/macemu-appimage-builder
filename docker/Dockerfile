@@ -71,7 +71,7 @@ WORKDIR /usr/local/src/xen/tools
 RUN [ "$SKIP_VHD" = y ] || ./configure
 WORKDIR /usr/local/src/xen/tools/blktap2/vhd/lib
 # patch Makefile to allow some impurities
-#RUN [ "$SKIP_VHD" = y ] || (mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict)
+RUN [ "$SKIP_VHD" = y ] || (mv Makefile Makefile.strict && cat Makefile.strict | sed 's/-Werror/-Wno-error/g' > Makefile && rm Makefile.strict)
 # build xentools libvhd
 RUN [ "$SKIP_VHD" = y ] || make -j $(nproc)
 RUN [ "$SKIP_VHD" = y ] || DESTDIR=/usr/lib make install
@@ -195,7 +195,7 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libthai.so.0 \
-	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.1 \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libatk-bridge.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \
@@ -281,7 +281,7 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libthai.so.0 \
-	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.0 \
+	--library /usr/lib/$(</ARCHDIR)libthai.so.0.3.1 \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libatk-bridge.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libferret.so \
 	--library /usr/lib/$(</ARCHDIR)gtk-2.0/modules/libgail.so \

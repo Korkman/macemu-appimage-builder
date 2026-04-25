@@ -50,7 +50,7 @@ jobs:
                 
       # add to continuous release
       #- name: Upload .tar.gz asset to continuous release
-      #  uses: "ncipollo/release-action@v1"
+      #  uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd
       #  with:
       #    tag: "continuous"
       #    name: "Continuous release"
@@ -66,19 +66,19 @@ jobs:
         id: sheepshaver_appimage
         run: |
           mv macemu/SheepShaver.AppImage SheepShaver-${{ inputs.platform }}.AppImage && \
-          echo "::set-output name=exists::yes" || \
-          echo "::set-output name=exists::no"
+          echo "exists=yes" >> "$GITHUB_OUTPUT" || \
+          echo "exists=no" >> "$GITHUB_OUTPUT"
         
       - name: Rename BasiliskII.AppImage for platform (if present)
         id: basilisk2_appimage
         run: |
           mv macemu/BasiliskII.AppImage BasiliskII-${{ inputs.platform }}.AppImage && \
-          echo "::set-output name=exists::yes" || \
-          echo "::set-output name=exists::no"
+          echo "exists=yes" >> "$GITHUB_OUTPUT" || \
+          echo "exists=no" >> "$GITHUB_OUTPUT"
       
       - name: Upload SheepShaver AppImage direct asset to continuous release (if present)
         if: steps.sheepshaver_appimage.outputs.exists == 'yes'
-        uses: "ncipollo/release-action@v1"
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd
         with:
           tag: "continuous"
           name: "Continuous release"
@@ -91,7 +91,7 @@ jobs:
           
       - name: Upload BasiliskII AppImage direct asset to continuous release (if present)
         if: steps.basilisk2_appimage.outputs.exists == 'yes'
-        uses: "ncipollo/release-action@v1"
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd
         with:
           tag: "continuous"
           name: "Continuous release"

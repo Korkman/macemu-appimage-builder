@@ -2,9 +2,9 @@
 {
 	set -eu
 	
-	. /etc/lsb-release
+	. /etc/os-release
 	
-	echo "$DISTRIB_DESCRIPTION" > version-os
+	echo "$PRETTY_NAME" > version-os
 	
 	(cd /usr/local/src/macemu && echo "$(git config --get remote.origin.url) @ $(git log -1 --format="%ad") ($(git rev-parse --short HEAD))") > version-macemu
 	

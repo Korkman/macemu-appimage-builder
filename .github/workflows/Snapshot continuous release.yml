@@ -26,7 +26,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             try {
-                await github.git.deleteRef({
+                await github.rest.git.deleteRef({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   ref: "tags/${{ env.NEW_RELEASE_NAME }}"
@@ -34,7 +34,7 @@ jobs:
             } catch (e) {
               console.log("Tag '${{ env.NEW_RELEASE_NAME }}' does not exist yet? Error: " + e)
             }
-            await github.git.createRef({
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "refs/tags/${{ env.NEW_RELEASE_NAME }}",

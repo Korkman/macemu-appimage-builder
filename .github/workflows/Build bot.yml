@@ -16,11 +16,11 @@ jobs:
       contains(github.event.comment.body, 'Hey build bot, please build nothing!')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v4
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           script: |
             const {owner, repo} = context.issue
-            github.reactions.createForIssueComment({
+            github.rest.reactions.createForIssueComment({
               owner,
               repo,
               comment_id: context.payload.comment.id,
@@ -88,13 +88,13 @@ jobs:
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
       with:
         script: |
-          github.issues.createComment({
+          github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: "Build succeeded! ✅\n\nDownload from the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous)",
           });
-          github.reactions.createForIssueComment({
+          github.rest.reactions.createForIssueComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             comment_id: context.payload.comment.id,
@@ -105,13 +105,13 @@ jobs:
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
       with:
         script: |
-          github.issues.createComment({
+          github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: "Build failed! ❌\n\nIf multiple builds were requested, visit the [continuous release](https://github.com/Korkman/macemu-appimage-builder/releases/tag/continuous) to see which succeeded.",
           });
-          github.reactions.createForIssueComment({
+          github.rest.reactions.createForIssueComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             comment_id: context.payload.comment.id,

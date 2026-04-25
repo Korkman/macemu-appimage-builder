@@ -12,11 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      #- uses: actions/checkout@v3
-
       - name: Delete tag
-        uses: actions/github-script@v3
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |

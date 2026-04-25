@@ -31,7 +31,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       
       - name: Compile
         run: sudo ./compile ${{ inputs.platform }} ${{ inputs.target_stage }}
@@ -43,7 +43,7 @@ jobs:
         run: tar -czvf macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz macemu
       
       - name: Save artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}
           path: macemu-${{ inputs.platform }}-${{ inputs.target_stage }}.tar.gz

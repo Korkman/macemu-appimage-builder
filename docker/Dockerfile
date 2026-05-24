@@ -89,10 +89,7 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	ln -s /usr/local/bin/linuxdeploy.appdir/AppRun /usr/local/bin/linuxdeploy \
 )
 
-# install SDL
-RUN apt-get -y --no-install-recommends install libsdl2-dev
-
-# compile SDL
+# compile SDL2
 #WORKDIR /usr/local/src/sdl
 #RUN git clone --depth 1 --branch release-2.0.22 https://github.com/libsdl-org/SDL .
 #RUN apt-get -y --no-install-recommends install libasound2-dev libpulse-dev libaudio-dev libjack-dev \
@@ -105,6 +102,35 @@ RUN apt-get -y --no-install-recommends install libsdl2-dev
 #RUN ./configure
 #RUN make -j $(nproc)
 #RUN make install
+
+# compile SDL3
+WORKDIR /usr/local/src/sdl
+RUN git clone --depth 1 --branch release-3.4.8 https://github.com/libsdl-org/SDL .
+# dependency list from official guide
+RUN apt-get -y --no-install-recommends install build-essential git make \
+    pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+    libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+    libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+    libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+    libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev \
+    libwayland-dev
+# lower / discard these dependencies for Ubuntu Focal
+RUN apt info liburing-dev > /dev/null \
+    && apt-get -y --no-install-recommends install liburing-dev \
+    || echo "WARNING: no liburing-dev"
+RUN apt info libdecor-0-dev > /dev/null \
+    && apt-get -y --no-install-recommends install libdecor-0-dev \
+    || apt-get -y --no-install-recommends install libdecoration0-dev
+RUN apt info libpipewire-0.3-dev > /dev/null \
+    && apt-get -y --no-install-recommends install libpipewire-0.3-dev \
+    || apt-get -y --no-install-recommends install libpipewire-0.2-dev
+# build
+		RUN cmake -S . -B build && \
+    cmake --build build
+RUN cmake --install build --prefix /usr/local
+
+# install SDL2
+#RUN apt-get -y --no-install-recommends install libsdl2-dev
 
 # download appdir-lint.sh & deps
 WORKDIR /usr/local/bin
@@ -143,6 +169,7 @@ WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 RUN NO_CONFIGURE=1 ./autogen.sh
 RUN \
 	./configure \
+  --with-sdl3 \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
@@ -156,6 +183,9 @@ RUN \
 #	--enable-xf86-dga \
 #	--enable-xf86-vidmode \
 #	--enable-fbdev-dga \
+
+# hotfix: remove this obsolete include to support bincue with SDL3
+RUN sed -i 's/#include <SDL_audio.h>//g' /usr/local/src/macemu/BasiliskII/src/bincue.cpp
 
 RUN make -j $(nproc)
 RUN strip BasiliskII
@@ -228,19 +258,23 @@ WORKDIR /usr/local/src/macemu/SheepShaver
 RUN make links
 WORKDIR /usr/local/src/macemu/SheepShaver/src/Unix
 RUN NO_CONFIGURE=1 ./autogen.sh
+
 RUN  \
 	./configure \
-	--enable-sdl-video=yes \
-	--enable-sdl-audio=yes \
+  --with-sdl3 \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
 	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \
 	--without-esd \
 	$([ "$SKIP_NATMEM" = y ] && echo -n "" || echo -n "--enable-addressing=direct,0x10000000") \
+	--with-vdeplug \
 ;
-
 #	--enable-standalone-gui \ # combining the standalone gui with bincue breaks the build
 
+# hotfix: remove this obsolete include to support bincue with SDL3
+RUN sed -i 's/#include <SDL_audio.h>//g' /usr/local/src/macemu/BasiliskII/src/bincue.cpp
+
+#FROM scratch AS debug-skip-this
 RUN make -j $(nproc)
 RUN strip SheepShaver
 RUN make install DESTDIR=AppDir

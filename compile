@@ -13,25 +13,11 @@
 #   MACEMU_SOURCE=local ./compile x86_64
 # enter debug shell for the SheepShaver build environment in i386
 #   ./compile i386 debug buildenv-sheepshaver
-# quick debug shell for non-crashing build
-#   DOCKER_BUILDKIT=1 ./compile i386 debug buildenv-sheepshaver
 
 {
 	set -eu
 	set -o pipefail
 	
-	# must be root to control docker
-	if [ "$USER" != "root" ]
-	then
-		sudo -E "$0" $@
-		exit
-	fi
-	
-	SELF=$(readlink -f "$0")
-	HERE=${SELF%/*}
-	
-	cd "$HERE"
-
 	PLATFORM=${1:-}
 	LXDEPLOY_ARCH=""
 	PACKAGING="none"
@@ -40,12 +26,25 @@
 	SKIP_NATMEM="y"
 	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
+	
+	# must be root to control docker
+	if [ "$USER" != "root" ]
+	then
+		sudo env MACEMU_SOURCE=$MACEMU_SOURCE "$0" "$@"
+		exit
+	fi
+	
+	SELF=$(readlink -f "$0")
+	HERE=${SELF%/*}
+	
+	cd "$HERE"
+
 	case "${PLATFORM}" in
 		""|"x86_64")
 			echo "Building x86_64"
 			DOCKER_SUFFIX="x86_64"
 			DOCKER_PLATFORM="linux/x86-64"
-			DISTRO="ubuntu:jammy"
+			DISTRO="ubuntu:focal"
 			SKIP_VHD="n"
 			SKIP_NATMEM="y"
 			PACKAGING="linuxdeploy"
@@ -67,7 +66,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi1"
 			DOCKER_PLATFORM="linux/arm/v5"
-			DISTRO="balenalib/raspberry-pi-ubuntu:jammy-build"
+			DISTRO="balenalib/raspberry-pi-ubuntu:focal-build"
 		;;
 		"pi2")
 			echo "Building Raspberry ${PLATFORM} [EXPERIMENTAL]"
@@ -75,8 +74,7 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi2"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberry-pi2-ubuntu:jammy-build"
-			#DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
+			DISTRO="balenalib/raspberry-pi2-ubuntu:focal-build"
 		;;
 		"pi3"|"pi4"|"pi0v2")
 			echo "Building Raspberry ${PLATFORM} (pi3, pi4, pi0v2) [EXPERIMENTAL]"
@@ -84,14 +82,14 @@
 			echo "WARNING: No packager available for this platform"
 			DOCKER_SUFFIX="pi3"
 			DOCKER_PLATFORM="linux/arm/v7"
-			DISTRO="balenalib/raspberrypi3-ubuntu:jammy-build"
+			DISTRO="balenalib/raspberrypi3-ubuntu:focal-build"
 		;;
 		"aarch64")
 			echo "Building ${PLATFORM} "
 			DOCKER_SUFFIX="aarch64"
 			DOCKER_PLATFORM="linux/arm64"
-			DISTRO="balenalib/raspberrypi4-64-ubuntu:jammy-build"
-			#DISTRO="balenalib/aarch64-ubuntu:jammy-build"
+			DISTRO="balenalib/raspberrypi4-64-ubuntu:focal-build"
+			#DISTRO="balenalib/aarch64-ubuntu:focal-build"
 			#MACEMU_GIT_ARGS="--depth 1 https://github.com/cebix/macemu"
 			PACKAGING="linuxdeploy"
 			LXDEPLOY_ARCH="aarch64"
@@ -124,8 +122,6 @@
 		sleep 2
 		
 		build_status=0
-		# DOCKER_BUILDKIT=1 not applied so we can enter last intermediate image
-		# NOTE: you can still prepend DOCKER_BUILDKIT=1 if you know the build succeeds to use your cache
 		docker build \
 			--progress=plain \
 			--platform $DOCKER_PLATFORM \
@@ -170,7 +166,7 @@
 		echo "Building stage $TARGET (packaging: $PACKAGING)"
 		sleep 2
 		
-		# DOCKER_BUILDKIT=1 currently required for custom --output
+		# DOCKER_BUILDKIT=1 is required for custom --output
 		DOCKER_BUILDKIT=1 docker build \
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \

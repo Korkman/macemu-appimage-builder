@@ -24,6 +24,7 @@
 	SKIP_VHD="y"
 	SKIP_BINCUE="n"
 	SKIP_NATMEM="y"
+	SDL="${SDL:-2}"
 	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 	
@@ -127,6 +128,7 @@
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \
 			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SDL=$SDL \
 			--build-arg SKIP_NATMEM=$SKIP_NATMEM \
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \
@@ -171,6 +173,7 @@
 			--platform $DOCKER_PLATFORM \
 			--build-arg DISTRO=$DISTRO \
 			--build-arg SKIP_VHD=$SKIP_VHD \
+			--build-arg SDL=$SDL \
 			--build-arg SKIP_NATMEM=$SKIP_NATMEM \
 			--build-arg SKIP_BINCUE=$SKIP_BINCUE \
 			--build-arg PACKAGING=$PACKAGING \

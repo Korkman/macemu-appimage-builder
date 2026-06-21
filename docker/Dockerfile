@@ -89,45 +89,44 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || ( \
 	ln -s /usr/local/bin/linuxdeploy.appdir/AppRun /usr/local/bin/linuxdeploy \
 )
 
+ARG SDL="2"
+WORKDIR /usr/local/src/sdl
+
 # compile SDL2
-#WORKDIR /usr/local/src/sdl
-#RUN git clone --depth 1 --branch release-2.0.22 https://github.com/libsdl-org/SDL .
-#RUN apt-get -y --no-install-recommends install libasound2-dev libpulse-dev libaudio-dev libjack-dev \
-#libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev \
-#libxss-dev libgl1-mesa-dev libdbus-1-dev \
-#libudev-dev libgles2-mesa-dev libegl1-mesa-dev libibus-1.0-dev \
-#fcitx-libs-dev libsamplerate0-dev libsndio-dev libwayland-dev \
-#libxkbcommon-dev libdrm-dev libgbm-dev
-#WORKDIR /usr/local/src/sdl
-#RUN ./configure
-#RUN make -j $(nproc)
-#RUN make install
+RUN [ "$SDL" != 2 ] || git clone --depth 1 --branch release-2.32.10 https://github.com/libsdl-org/SDL .
+RUN [ "$SDL" != 2 ] || apt-get -y --no-install-recommends install libasound2-dev libpulse-dev libaudio-dev libjack-dev \
+	libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev \
+	libxss-dev libgl1-mesa-dev libdbus-1-dev \
+	libudev-dev libgles2-mesa-dev libegl1-mesa-dev libibus-1.0-dev \
+	fcitx-libs-dev libsamplerate0-dev libsndio-dev libwayland-dev \
+	libxkbcommon-dev libdrm-dev libgbm-dev
+RUN [ "$SDL" != 2 ] || ./configure
+RUN [ "$SDL" != 2 ] || make -j $(nproc)
+RUN [ "$SDL" != 2 ] || make install
 
 # compile SDL3
-WORKDIR /usr/local/src/sdl
-RUN git clone --depth 1 --branch release-3.4.8 https://github.com/libsdl-org/SDL .
+RUN [ "$SDL" != 3 ] || git clone --depth 1 --branch release-3.4.10 https://github.com/libsdl-org/SDL .
 # dependency list from official guide
-RUN apt-get -y --no-install-recommends install build-essential git make \
-    pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
-    libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-    libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-    libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-    libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev \
-    libwayland-dev
+RUN [ "$SDL" != 3 ] || apt-get -y --no-install-recommends install build-essential git make \
+	pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+	libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+	libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+	libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+	libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev \
+	libwayland-dev
 # lower / discard these dependencies for Ubuntu Focal
-RUN apt info liburing-dev > /dev/null \
-    && apt-get -y --no-install-recommends install liburing-dev \
-    || echo "WARNING: no liburing-dev"
-RUN apt info libdecor-0-dev > /dev/null \
-    && apt-get -y --no-install-recommends install libdecor-0-dev \
-    || apt-get -y --no-install-recommends install libdecoration0-dev
-RUN apt info libpipewire-0.3-dev > /dev/null \
-    && apt-get -y --no-install-recommends install libpipewire-0.3-dev \
-    || apt-get -y --no-install-recommends install libpipewire-0.2-dev
+RUN [ "$SDL" != 3 ] || (apt info liburing-dev > /dev/null \
+	&& apt-get -y --no-install-recommends install liburing-dev \
+	|| echo "WARNING: no liburing-dev")
+RUN [ "$SDL" != 3 ] || (apt info libdecor-0-dev > /dev/null \
+	&& apt-get -y --no-install-recommends install libdecor-0-dev \
+	|| apt-get -y --no-install-recommends install libdecoration0-dev)
+RUN [ "$SDL" != 3 ] || (apt info libpipewire-0.3-dev > /dev/null \
+	&& apt-get -y --no-install-recommends install libpipewire-0.3-dev \
+	|| apt-get -y --no-install-recommends install libpipewire-0.2-dev)
 # build
-		RUN cmake -S . -B build && \
-    cmake --build build
-RUN cmake --install build --prefix /usr/local
+RUN [ "$SDL" != 3 ] || (cmake -S . -B build && cmake --build build)
+RUN [ "$SDL" != 3 ] || (cmake --install build --prefix /usr/local)
 
 # install SDL2
 #RUN apt-get -y --no-install-recommends install libsdl2-dev
@@ -169,7 +168,7 @@ WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 RUN NO_CONFIGURE=1 ./autogen.sh
 RUN \
 	./configure \
-  --with-sdl3 \
+  --with-sdl$SDL \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
@@ -261,7 +260,7 @@ RUN NO_CONFIGURE=1 ./autogen.sh
 
 RUN  \
 	./configure \
-  --with-sdl3 \
+  --with-sdl$SDL \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
 	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \

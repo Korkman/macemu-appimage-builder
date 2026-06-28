@@ -31,7 +31,7 @@
 	# must be root to control docker
 	if [ "$USER" != "root" ]
 	then
-		sudo env MACEMU_SOURCE=$MACEMU_SOURCE "$0" "$@"
+		sudo env MACEMU_SOURCE=$MACEMU_SOURCE SDL=$SDL PLATFORM=$PLATFORM "$0" "$@"
 		exit
 	fi
 	

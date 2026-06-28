@@ -38,6 +38,11 @@ RUN apt-get -y --no-install-recommends install \
 	libmpfr-dev \
 ;
 
+RUN apt-get -y --no-install-recommends install \
+	# clipboard manipulation tools to clear clipboards on launch \
+	xsel \
+;
+
 # libsdl2-dev 
 #	# for appimage \
 #	fuse3 libfuse2 \
@@ -162,13 +167,14 @@ FROM buildenv-src-$MACEMU_SOURCE AS buildenv-basilisk2
 ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
 ARG PACKAGING="linuxdeploy"
+ARG SDL="2"
 
 # compile BasiliskII
 WORKDIR /usr/local/src/macemu/BasiliskII/src/Unix
 RUN NO_CONFIGURE=1 ./autogen.sh
 RUN \
 	./configure \
-  --with-sdl$SDL \
+	$([ "$SDL" = 3 ] && echo -n "--with-sdl3" || echo -n "") \
 	--enable-sdl-video=yes \
 	--enable-sdl-audio=yes \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
@@ -214,12 +220,14 @@ COPY build/BasiliskIIGUI.desktop.in  AppDir/BasiliskIIGUI.desktop.in
 RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
+COPY build/apprun-hook-clear-clip.sh AppDir/apprun-hooks/20-apprun-hook-clear-clip.sh
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
 	--desktop-file=/build/BasiliskII.desktop \
 	--icon-file=/build/BasiliskII.png \
 	--custom-apprun /build/AppRun.sh \
 	--executable ./BasiliskII \
+	--executable /usr/bin/xsel \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \
@@ -251,6 +259,7 @@ ARG SKIP_VHD="n"
 ARG SKIP_BINCUE="n"
 ARG SKIP_NATMEM="y"
 ARG PACKAGING="linuxdeploy"
+ARG SDL="2"
 
 # compile SheepShaver
 WORKDIR /usr/local/src/macemu/SheepShaver
@@ -260,7 +269,7 @@ RUN NO_CONFIGURE=1 ./autogen.sh
 
 RUN  \
 	./configure \
-  --with-sdl$SDL \
+	$([ "$SDL" = 3 ] && echo -n "--with-sdl3" || echo -n "") \
 	$([ "$SKIP_BINCUE" = y ] && echo -n "" || echo -n "--with-bincue") \
 	$([ "$SKIP_VHD" = y ] && echo -n "" || echo -n "--with-libvhd") \
 	--with-x \
@@ -303,6 +312,7 @@ RUN APPDIR=./AppDir /build/bundle-gtk2.sh
 COPY build/apprun-hook-help.sh AppDir/apprun-hooks/05-apprun-hook-help.sh
 COPY build/apprun-hook-install.sh AppDir/apprun-hooks/10-apprun-hook-install.sh
 COPY build/apprun-hook-mmap.sh AppDir/apprun-hooks/20-apprun-hook-mmap.sh
+COPY build/apprun-hook-clear-clip.sh AppDir/apprun-hooks/20-apprun-hook-clear-clip.sh
 RUN if [ "$SKIP_NATMEM" = n ]; then rm AppDir/apprun-hooks/20-apprun-hook-mmap.sh; fi
 RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--appdir AppDir \
@@ -310,6 +320,7 @@ RUN [ "$PACKAGING" != "linuxdeploy" ] || linuxdeploy \
 	--icon-file=/build/SheepShaver.png \
 	--custom-apprun /build/AppRun.sh \
 	--executable ./SheepShaver \
+	--executable /usr/bin/xsel \
 	--library /usr/lib/$(</ARCHDIR)libpango-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangoft2-1.0.so.0 \
 	--library /usr/lib/$(</ARCHDIR)libpangocairo-1.0.so.0 \

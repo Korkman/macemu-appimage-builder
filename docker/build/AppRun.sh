@@ -70,7 +70,10 @@
 		"${EXEC}" --sdlrender software "$@"
 		echo "Press enter to continue ..."; read -r enter
 	else
-		exec "${EXEC}" --sdlrender software "$@"   
+		#exec "${EXEC}" --sdlrender software "$@"   
+		"${EXEC}" --sdlrender software "$@"
+		# need to stay in control to clear (kill) xsel at the end
+		"$HERE/usr/bin/xsel" --clear
 	fi
 	
 }

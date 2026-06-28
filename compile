@@ -24,7 +24,7 @@
 	SKIP_VHD="y"
 	SKIP_BINCUE="n"
 	SKIP_NATMEM="y"
-	SDL="${SDL:-2}"
+	SDL="${SDL:-3}"
 	MACEMU_SOURCE="${MACEMU_SOURCE:-git}"
 	MACEMU_GIT_ARGS="--depth 1 https://github.com/kanjitalk755/macemu"
 	

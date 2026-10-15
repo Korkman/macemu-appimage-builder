@@ -55,7 +55,7 @@
 			echo "Building ${PLATFORM}"
 			DOCKER_SUFFIX="i386"
 			DOCKER_PLATFORM="linux/386"
-			DISTRO="debian:bullseye"
+			DISTRO="debian/eol:bullseye"
 			SKIP_VHD="y" # does not compile on i386 as of 2026-04-26
 			SKIP_NATMEM="y"
 			PACKAGING="linuxdeploy"

@@ -1,10 +1,12 @@
-ARG DISTRO=debian:bullseye
+ARG DISTRO=debian/eol:bullseye
 ARG MACEMU_SOURCE="git"
 FROM $DISTRO AS buildenv
 
 ENV DEBIAN_FRONTEND='noninteractive'
 
 # download dependencies
+# retry transient download failures (e.g. 404s from flaky CDN edges)
+RUN echo 'Acquire::Retries "10";' > /etc/apt/apt.conf.d/99retries
 RUN apt-get update
 RUN apt-get -y --no-install-recommends install \
 	# for macemu \

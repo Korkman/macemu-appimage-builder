@@ -12,6 +12,11 @@
 		echo
 	fi
 	
+	# run host tools BEFORE exporting LD_LIBRARY_PATH: bundled libs (e.g. libsystemd,
+	# libselinux) may be incompatible with the host's coreutils
+	EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
+	APPIMAGE_DIR=$(dirname "$APPIMAGE")
+	
 	export PATH="${HERE}/usr/local/bin/:${HERE}/usr/local/sbin/:${HERE}/usr/bin/:${HERE}/usr/sbin/:${HERE}/usr/games/:${HERE}/bin/:${HERE}/sbin/${PATH:+:$PATH}"
 	export LD_LIBRARY_PATH="${HERE}/usr/lib/:${HERE}/lib/${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 	export PYTHONPATH="${HERE}/usr/share/pyshared/${PYTHONPATH:+:$PYTHONPATH}"
@@ -61,9 +66,8 @@
 	export GIO_MODULE_DIR="${HERE}/usr/lib/gio/modules"
 	
 	# startup.wav expected in same dir as app - change working dir accordingly
-	cd "$(dirname "$APPIMAGE")"
+	cd "$APPIMAGE_DIR"
 	
-	EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
 	# NOTE: added --sdlrender software as a more conservative default (fixes crashes on Fedora 36)
 	if [ "${pauseAfterExecution:-no}" = "yes" ]
 	then
